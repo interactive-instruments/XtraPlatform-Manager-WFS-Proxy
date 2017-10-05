@@ -1,0 +1,7 @@
+{
+    "header": "/*\n * Copyright 2017 European Union\n * Licensed under the EUPL, Version 1.2 or - as soon they will be approved by\n * the European Commission - subsequent versions of the EUPL (the \"Licence\");\n * You may not use this work except in compliance with the Licence.\n * You may obtain a copy of the Licence at:\n *\n * https://joinup.ec.europa.eu/software/page/eupl\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the Licence is distributed on an \"AS IS\" basis,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the Licence for the specific language governing permissions and\n * limitations under the Licence.\n *\n * This work was supported by the EU Interoperability Solutions for\n * European Public Administrations Programme (https://ec.europa.eu/isa2)\n * through the ELISE action (European Location Interoperability Solutions \n * for e-Government).\n */\n\n",
+    "directory": "./",
+    "exclude": ["node_modules", "webpack"],
+    "headerTest": "^\\/\\*(.|\\n)+?Copyright(.|\\n)+?\\*\\/[\\n]*",
+    "extension": ["js", "jsx"]
+}
