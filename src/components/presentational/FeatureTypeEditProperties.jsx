@@ -43,7 +43,7 @@ class FeatureTypeEditProperties extends Component {
 
         return (
             <Section pad={ { vertical: 'none' } } full="horizontal">
-                <Box pad={ { horizontal: 'medium' } } separator={ !showMapping && 'bottom' }>
+                <Box pad={ { horizontal: 'medium' } } separator={ !showMapping ? 'bottom' : 'none' }>
                     <Heading tag="h2">
                         Mapping
                     </Heading>

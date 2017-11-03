@@ -57,7 +57,7 @@ const ServiceApiWfsProxy = {
                 headers: {
                     'Content-Type': 'application/json'
                 }
-            },
+            } /*,
             optimisticUpdate: {
                 featureTypes: (prev) => Object.assign({}, prev, {
                     [ftid]: {
@@ -65,7 +65,7 @@ const ServiceApiWfsProxy = {
                         ...change
                     }
                 })
-            }
+            }*/
         }
     },
 

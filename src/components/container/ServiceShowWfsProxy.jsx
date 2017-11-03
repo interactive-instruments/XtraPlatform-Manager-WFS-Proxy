@@ -37,11 +37,12 @@ import { push } from 'redux-little-router'
 
 // TODO:
 import { getService, getFeatureTypes } from '../../reducers/service'
+import { actions } from 'xtraplatform-manager/src/reducers/service';
 
 
 @connect(
     (state, props) => {
-        console.log('CONNECT', props.urlParams.id, state.entities.serviceConfigs)
+        //console.log('CONNECT', props.urlParams.id, state.entities.serviceConfigs)
         return {
             service: getService(state, props.urlParams.id),
             featureTypes: getFeatureTypes(state, props.urlParams.id)
@@ -82,6 +83,7 @@ export default class ServiceShowWfsProxy extends Component {
             var sid = service.id;
             console.log('selected: ', sid, fid);
             // TODO: save in store and push via action, see ferret
+            // TODO: remove when property is url param
             //this.props.dispatch(actions.selectFeatureType(fid));
             dispatch(push('/services/' + sid + '/' + fid));
         };
@@ -89,7 +91,7 @@ export default class ServiceShowWfsProxy extends Component {
     }
 
     render() {
-        console.log('CONNECTED', this.props)
+        //console.log('CONNECTED', this.props)
         let fts;
         fts = this._renderFeatureTypes();
 

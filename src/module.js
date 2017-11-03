@@ -24,9 +24,10 @@ import ServiceAddWfsProxy from './components/container/ServiceAddWfsProxy'
 import ServiceShowWfsProxy from './components/container/ServiceShowWfsProxy'
 import FeatureTypeShow from './components/container/FeatureTypeShow'
 import ServiceAddCatalog from './components/container/ServiceAddCatalog'
+import MappingEdit from './components/presentational/MappingEdit'
 
 export default {
-    serviceTypes: ['wfsproxy'],
+    serviceTypes: ['ldproxy'],
     routes: {
         path: '/',
         routes: [
@@ -50,10 +51,13 @@ export default {
     },
     typedComponents: {
         ServiceAdd: {
-            wfsproxy: ServiceAddWfsProxy
+            ldproxy: ServiceAddWfsProxy
         },
         ServiceShow: {
-            wfsproxy: ServiceShowWfsProxy
+            ldproxy: ServiceShowWfsProxy
+        },
+        MappingEdit: {
+            base: MappingEdit
         }
     },
     serviceMenu: [{

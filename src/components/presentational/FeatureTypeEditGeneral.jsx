@@ -34,6 +34,7 @@ import TextInput from 'grommet/components/TextInput';
 import TextInputUi from 'xtraplatform-manager/src/components/common/TextInputUi';
 
 @ui({
+    //key: 'FeatureTypeEditGeneral',
     state: {
         displayName: (props) => props.featureType.displayName || ''
     }
@@ -42,13 +43,13 @@ import TextInputUi from 'xtraplatform-manager/src/components/common/TextInputUi'
 export default class FeatureTypeEditGeneral extends Component {
 
     _save = () => {
-        const {ui, onChange, featureType} = this.props;
+        const {ui, onChange} = this.props;
 
         onChange(ui);
     }
 
     render() {
-        const {featureType, ui, updateUI} = this.props;
+        const {featureType, ui, updateUI, onChange} = this.props;
 
         return (
             featureType && <Section pad={ { vertical: 'medium' } } full="horizontal">

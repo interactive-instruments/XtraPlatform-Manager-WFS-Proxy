@@ -29,9 +29,9 @@ import Heading from 'grommet/components/Heading';
 import Box from 'grommet/components/Box';
 import Form from 'grommet/components/Form';
 
-import MappingEdit from './MappingEdit';
+//import MappingEdit from './MappingEdit';
 
-class PropertyEdit extends Component {
+export default class PropertyEdit extends Component {
 
     _onMappingChange = (change) => {
         const {qn, onChange} = this.props;
@@ -46,41 +46,39 @@ class PropertyEdit extends Component {
     }
 
     render() {
-        const {title, mappings, isFeatureType} = this.props;
+        const {title, mappings, isFeatureType, getTypedComponent, isSaving} = this.props;
 
-        let properties = [];
+        let baseMapping;
 
         return (
-            <Sidebar size="medium" colorIndex="light-2">
+            <Sidebar size="large" colorIndex="light-2">
                 <div>
-                    <Header pad={ { horizontal: "small", vertical: "medium" } }
-                        justify="between"
-                        size="large"
-                        colorIndex="light-2">
-                        <Heading tag="h2"
-                            margin="none"
-                            strong={ true }
-                            truncate={ true }>
-                            { title }
-                        </Heading>
-                    </Header>
-                    <Article align="center" pad={ { horizontal: 'medium' } } primary={ true }>
-                        <Form compact={ true }>
-                            { Object.keys(mappings).map(
-                                  (mimeType) => <Section key={ mimeType } pad={ { vertical: 'medium' } } full="horizontal">
-                                                    <MappingEdit mimeType={ mimeType }
-                                                        mapping={ mappings[mimeType][0] }
-                                                        isFeatureType={ isFeatureType }
-                                                        onChange={ this._onMappingChange } />
-                                                </Section>
-                              ) }
-                            <Box pad={ { vertical: 'large' } } />
-                        </Form>
-                    </Article>
+                    { Object.keys(mappings).map(
+                          (mimeType, i) => {
+                              if (i === 0) {
+                                  baseMapping = mappings[mimeType][0];
+                              }
+                              const MappingEdit = getTypedComponent('MappingEdit', mimeType)
+                              //console.log('ME', mimeType, MappingEdit)
+                              return MappingEdit && <Section key={ mimeType } pad={ i === 0 ? {
+                                                          top: 'none',
+                                                          bottom: 'medium'
+                                                      } : {
+                                                          vertical: 'medium'
+                                                      } } full="horizontal">
+                                                        <MappingEdit key={ mimeType }
+                                                            title={ title }
+                                                            mimeType={ mimeType }
+                                                            mapping={ mappings[mimeType][0] }
+                                                            baseMapping={ baseMapping }
+                                                            isFeatureType={ isFeatureType }
+                                                            onChange={ this._onMappingChange } />
+                                                    </Section>
+                          }
+                      ) }
+                    <Box pad={ { vertical: 'large' } } />
                 </div>
             </Sidebar>
         );
     }
 }
-
-export default PropertyEdit;

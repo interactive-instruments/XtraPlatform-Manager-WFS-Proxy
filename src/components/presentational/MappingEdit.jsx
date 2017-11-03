@@ -19,7 +19,9 @@
  * for e-Government).
  */
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import ui from 'redux-ui';
 
 import Article from 'grommet/components/Article';
 import Header from 'grommet/components/Header';
@@ -34,121 +36,124 @@ import CheckBox from 'grommet/components/CheckBox';
 import Label from 'grommet/components/Label';
 import Collapsible from 'grommet/components/Collapsible';
 
-class MappingEdit extends Component {
+import TextInputUi from 'xtraplatform-manager/src/components/common/TextInputUi';
+import CheckboxUi from 'xtraplatform-manager/src/components/common/CheckboxUi';
+import SelectUi from 'xtraplatform-manager/src/components/common/SelectUi';
+import { shallowDiffers } from 'xtraplatform-manager/src/util';
 
-    constructor(props) {
-        super(props);
+const initState = {
+    enabled: (props) => props.mapping.enabled || false,
+    name: (props) => props.mapping.name ? props.mapping.name : (props.isFeatureType && props.mimeType === 'text/html' ? '{{id}}' : ''),
+    mappingType: (props) => props.mapping.mappingType || '',
+    baseMapping: (props) => props.baseMapping
+}
 
-        this.state = {
-            enabled: props.mapping.enabled || false,
-            name: props.mapping.name || (props.isFeatureType && props.mimeType === 'text/html' ? '{{id}}' : ''),
-            type: props.mapping.type || 'NONE',
-            showInCollection: props.mapping.showInCollection || false,
-            itemType: props.mapping.itemType || '',
-            itemProp: props.mapping.itemProp || '',
-            mappingType: props.mapping.mappingType || ''
+@ui({
+    state: initState
+})
+
+export default class MappingEdit extends Component {
+
+    shouldComponentUpdate(nextProps) {
+        const {ui, updateUI, initStateExt, baseMapping, mimeType, isFeatureType, title} = this.props;
+        const initStateMerged = {
+            ...initState,
+            ...initStateExt
+        };
+
+        //console.log('CHK', mimeType, baseMapping, nextProps.baseMapping, nextProps.mapping, ui, nextProps.ui, title, nextProps.title)
+        if (shallowDiffers(ui, nextProps.ui)) {
+            //console.log('UP', mimeType, nextProps.baseMapping, ui, nextProps.ui)
+            return true;
+        } else if ((!nextProps.isSaving && shallowDiffers(ui, nextProps.mapping, true)) || shallowDiffers(baseMapping, nextProps.baseMapping) || isFeatureType !== nextProps.isFeatureType || title !== nextProps.title) {
+            //console.log('MAP', mimeType, ui, nextProps.mapping)
+
+            updateUI(
+                Object.keys(initStateMerged).reduce((state, key) => {
+                    state[key] = initStateMerged[key](nextProps);
+                    return state;
+                }, {})
+            )
         }
 
-        this._timers = {}
+        return false;
     }
 
-    componentWillReceiveProps(nextProps) {
+    save = () => {
+        const {ui, mimeType, onChange} = this.props;
 
-        if (this.props.mapping != nextProps.mapping) {
-
-            this.setState({
-                enabled: nextProps.mapping.enabled || false,
-                name: nextProps.mapping.name || (nextProps.isFeatureType && nextProps.mimeType === 'text/html' ? '{{id}}' : ''),
-                type: nextProps.mapping.type || 'NONE',
-                showInCollection: nextProps.mapping.showInCollection || false,
-                itemType: nextProps.mapping.itemType || '',
-                itemProp: nextProps.mapping.itemProp || '',
-                mappingType: nextProps.mapping.mappingType || ''
-            })
-        }
-    }
-
-    _handleInputChange = (event) => {
-        const {mapping, mimeType, onChange} = this.props;
-
-        const target = event.target;
-        const value = target.type === 'checkbox' ? target.checked : (event.option ? event.option.value : target.value);
-        const name = target.name;
-
-        clearTimeout(this._timers[mimeType + name]);
-        this._timers[mimeType + name] = setTimeout(() => {
-            onChange({
-                [mimeType]: [{
-                    ...this.state,
-                    [name]: value
-                }]
-            });
-        }, 1000);
-
-        this.setState({
-            [name]: value
+        onChange({
+            [mimeType]: [ui]
         });
-
-
     }
 
     render() {
-        let {mapping, mimeType, isFeatureType} = this.props;
-        let {enabled, name, type, showInCollection, itemProp, itemType} = this.state;
+        let {ui, updateUI, mapping, baseMapping, mimeType, title, heading, smaller, isFeatureType, isSaving, children} = this.props;
 
-        const header = <Heading tag="h4"
+        const header = <Heading tag={ heading }
                            strong={ true }
                            margin="none"
                            truncate={ true }
                            uppercase={ false }>
-                           { mimeType }
+                           { title }
                        </Heading>
 
-        return (
-            <FormFields>
-                <fieldset>
-                    <Header size="small" justify="between" pad="none">
-                        { isFeatureType ? header : <CheckBox name="enabled"
-                                                       checked={ enabled }
-                                                       toggle={ true }
-                                                       reverse={ false }
-                                                       label={ header }
-                                                       onChange={ this._handleInputChange } /> }
-                    </Header>
-                    <Collapsible active={ enabled }>
-                        { (!isFeatureType || mimeType === 'text/html') && <FormField label="Name">
-                                                                              <TextInput name="name" value={ name } onDOMChange={ this._handleInputChange } />
-                                                                          </FormField> }
-                        { !isFeatureType && <FormField label="LD Type">
-                                                <TextInput name="itemProp" value={ itemProp } onDOMChange={ this._handleInputChange } />
-                                            </FormField> }
-                        { isFeatureType && <FormField label="LD Type">
-                                               <TextInput name="itemType" value={ itemType } onDOMChange={ this._handleInputChange } />
-                                           </FormField> }
-                        { !isFeatureType && <FormField label="Type">
-                                                { (type === 'ID' || type === 'GEOMETRY') ?
-                                                  <Select name="type"
-                                                      value={ type }
-                                                      options={ [type] }
-                                                      onChange={ () => {
-                                                                 } } />
-                                                  : <Select name="type"
-                                                        value={ { value: type, label: type === 'STRING' ? 'String' : 'Number' } }
-                                                        options={ [{ value: 'STRING', label: 'String' }, { value: 'NUMBER', label: 'Number' }] }
-                                                        onChange={ this._handleInputChange } /> }
-                                            </FormField> }
-                        { !isFeatureType && <FormField label="Show in collection">
-                                                <CheckBox name="showInCollection"
-                                                    checked={ showInCollection }
-                                                    toggle={ true }
-                                                    reverse={ false }
-                                                    onChange={ this._handleInputChange } />
-                                            </FormField> }
-                    </Collapsible>
-                </fieldset>
-            </FormFields>
+        return (<Article align="center" pad={ { horizontal: smaller ? 'medium' : 'small' } } primary={ true }>
+                    <Form compact={ false }>
+                        <FormFields>
+                            <fieldset>
+                                <Header size={ smaller ? 'small' : 'large' } justify="start" pad={ { horizontal: 'none', vertical: smaller ? 'none' : 'medium' } }>
+                                    { isFeatureType && mimeType !== 'general' ? header : <CheckboxUi name="enabled"
+                                                                                             checked={ ui.enabled && baseMapping.enabled }
+                                                                                             disabled={ !baseMapping.enabled }
+                                                                                             toggle={ true }
+                                                                                             reverse={ false }
+                                                                                             smaller={ smaller }
+                                                                                             label={ header }
+                                                                                             onChange={ updateUI }
+                                                                                             onDebounce={ this.save } /> }
+                                </Header>
+                                <Collapsible active={ ui.enabled && baseMapping.enabled }>
+                                    { (!isFeatureType || mimeType === 'text/html') && <FormField label="Name">
+                                                                                          <TextInputUi name="name"
+                                                                                              value={ ui.name }
+                                                                                              placeHolder={ baseMapping.name }
+                                                                                              onChange={ updateUI }
+                                                                                              onDebounce={ this.save } />
+                                                                                      </FormField> }
+                                    { React.Children.map(children,
+                                          (child) => {
+                                              //console.log(child);
+                                              return child ? React.cloneElement(child, {}, React.cloneElement(React.Children.only(child.props.children), {
+                                                  onDebounce: this.save
+                                              })) : child
+                                          }
+                                      ) }
+                                </Collapsible>
+                            </fieldset>
+                        </FormFields>
+                    </Form>
+                </Article>
         );
     }
 }
 
-export default MappingEdit;
+
+MappingEdit.propTypes = {
+    title: PropTypes.string.isRequired,
+    heading: PropTypes.string.isRequired,
+    smaller: PropTypes.bool.isRequired,
+    mimeType: PropTypes.string.isRequired,
+    isFeatureType: PropTypes.bool.isRequired,
+    mapping: PropTypes.object.isRequired,
+    baseMapping: PropTypes.object.isRequired,
+    onChange: PropTypes.func.isRequired
+};
+
+MappingEdit.defaultProps = {
+    heading: 'h4',
+    smaller: true,
+    baseMapping: {
+        enabled: true
+    }
+};
