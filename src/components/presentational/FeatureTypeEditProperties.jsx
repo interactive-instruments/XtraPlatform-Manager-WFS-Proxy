@@ -59,9 +59,9 @@ class FeatureTypeEditProperties extends Component {
                                        { mappingStatus.errorMessage }
                                    </Paragraph>
                                    { mappingStatus.errorMessageDetails
-                                     && mappingStatus.errorMessageDetails.map(detail => <Paragraph margin='none'>
-                                                                                            { detail }
-                                                                                        </Paragraph>) }
+                                     && mappingStatus.errorMessageDetails.map((detail, i) => <Paragraph key={ i } margin='none'>
+                                                                                                 { detail }
+                                                                                             </Paragraph>) }
                                </Box> }
                 { showLoading && <Box pad={ { horizontal: 'medium', vertical: 'small' } }>
                                      <Button label='Loading...' secondary={ true } />

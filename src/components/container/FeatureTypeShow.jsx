@@ -80,6 +80,7 @@ import ServiceApi from '../../apis/ServiceApiWfsProxy'
             selectedService: getSelectedService(state),
             selectedFeatureType: getSelectedFeatureType(state),
             selectedProperty: getSelectedProperty(state) ? getSelectedProperty(state) : getFeatureType(state) ? getFeatureType(state).id : null,
+            reloadPending: Object.values(state.queries).some(query => !query.isMutation && query.isPending),
             queryPending: Object.values(state.queries).some(query => query.isMutation && query.isPending),
             queryFinished: Object.values(state.queries).some(query => query.isMutation && query.isFinished && (Date.now() - query.lastUpdated < 500)) && Object.values(state.queries).every(query => !query.isMutation || query.isFinished)
         }
@@ -116,6 +117,9 @@ import ServiceApi from '../../apis/ServiceApiWfsProxy'
                     .then((result) => {
                         dispatch(requestAsync(ServiceApi.getServiceConfigQuery(service.id)));
                     })
+            },
+            reloadService: (service) => {
+                setTimeout(() => dispatch(requestAsync(ServiceApi.getServiceConfigQuery(service.id))), 1000);
             }
         }
     })
@@ -124,8 +128,13 @@ import ServiceApi from '../../apis/ServiceApiWfsProxy'
 export default class FeatureTypeShow extends Component {
 
     render() {
-        const {service, featureType, queryFinished} = this.props;
+        const {service, featureType, reloadPending, queryFinished, reloadService} = this.props;
         //console.log('SEL', this.props.selectedProperty, featureType)
+
+        if (!reloadPending && service && service.serviceProperties.mappingStatus.loading) {
+            reloadService(service);
+        }
+
         return (
             (service && featureType) &&
             <div className="xtraplatform-toast">

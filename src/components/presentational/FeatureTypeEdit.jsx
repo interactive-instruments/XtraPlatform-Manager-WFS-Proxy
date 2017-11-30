@@ -67,11 +67,13 @@ export default class FeatureTypeEdit extends Component {
     shouldComponentUpdate(nextProps) {
         //console.log('CHK FT', this.props.featureType, nextProps.featureType)
         if (shallowDiffers(this.props.featureType, nextProps.featureType, false, ['mappings'])
-                || this.props.featureType.mappings.toString() !== nextProps.featureType.mappings.toString()
+                || (this.props.featureType.mappings && this.props.featureType.mappings.toString() !== nextProps.featureType.mappings.toString())
                 || this.props.selectedProperty !== nextProps.selectedProperty
                 //|| this.props.queryPending !== nextProps.queryPending
                 //|| this.props.queryFinished !== nextProps.queryFinished
-                || shallowDiffers(this.props.mappings[this.props.selectedProperty], nextProps.mappings[nextProps.selectedProperty])) {
+                || shallowDiffers(this.props.mappings[this.props.selectedProperty], nextProps.mappings[nextProps.selectedProperty])
+                || shallowDiffers(this.props.service.serviceProperties.mappingStatus, nextProps.service.serviceProperties.mappingStatus)
+        ) {
             //console.log('UP FT', this.props.featureType, nextProps.featureType)
             return true;
         }
