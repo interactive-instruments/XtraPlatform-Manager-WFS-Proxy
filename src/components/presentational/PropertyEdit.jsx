@@ -35,7 +35,7 @@ export default class PropertyEdit extends Component {
 
     _onMappingChange = (change) => {
         const {qn, onChange} = this.props;
-
+        console.log(qn, change);
         onChange({
             mappings: {
                 mappings: {

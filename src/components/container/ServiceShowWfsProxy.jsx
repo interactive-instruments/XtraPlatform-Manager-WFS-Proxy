@@ -22,6 +22,7 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import { connectRequest, mutateAsync, requestAsync } from 'redux-query';
 
 import Heading from 'grommet/components/Heading';
 import Section from 'grommet/components/Section';
@@ -31,6 +32,7 @@ import ListItem from 'grommet/components/ListItem';
 import ListPlaceholder from 'grommet-addons/components/ListPlaceholder';
 
 import ServiceShow from 'xtraplatform-manager/src/components/container/ServiceShow'
+import ServiceEditWfsSettings from '../presentational/ServiceEditWfsSettings'
 
 import { push } from 'redux-little-router'
 
@@ -38,7 +40,7 @@ import { push } from 'redux-little-router'
 // TODO:
 import { getService, getFeatureTypes } from '../../reducers/service'
 import { actions } from 'xtraplatform-manager/src/reducers/service';
-
+import ServiceApi from 'xtraplatform-manager/src/apis/ServiceApi'
 
 @connect(
     (state, props) => {
@@ -47,9 +49,36 @@ import { actions } from 'xtraplatform-manager/src/reducers/service';
             service: getService(state, props.urlParams.id),
             featureTypes: getFeatureTypes(state, props.urlParams.id)
         }
+    },
+    (dispatch) => {
+        return {
+            ...bindActionCreators(actions, dispatch),
+            dispatch,
+            updateService: (service) => {
+                // TODO: return updated service on POST request
+                dispatch(mutateAsync(ServiceApi.updateServiceQuery(service)))
+                    .then((result) => {
+                        if (result.status === 200) {
+                            dispatch(requestAsync(ServiceApi.getServiceConfigQuery(service.id)));
+                        } else {
+                            console.log('ERR', result)
+                            const error = result.body && result.body.error || {}
+                        }
+                    })
+            }
+        }
     })
 
 export default class ServiceShowWfsProxy extends Component {
+
+    _onChange = (change) => {
+        const {service, updateService} = this.props;
+
+        updateService({
+            ...change,
+            id: service.id
+        });
+    }
 
     _renderFeatureTypes() {
         const {featureTypes} = this.props;
@@ -92,12 +121,13 @@ export default class ServiceShowWfsProxy extends Component {
 
     render() {
         //console.log('CONNECTED', this.props)
-        let fts;
-        fts = this._renderFeatureTypes();
+        const {service} = this.props;
+        const featureTypes = this._renderFeatureTypes();
 
         return (
             <ServiceShow {...this.props}>
-                { fts }
+                { service && <ServiceEditWfsSettings service={ service } onChange={ this._onChange } /> }
+                { featureTypes }
             </ServiceShow>
         );
     }

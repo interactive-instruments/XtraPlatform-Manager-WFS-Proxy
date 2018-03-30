@@ -40,9 +40,11 @@ import TextInputUi from 'xtraplatform-manager/src/components/common/TextInputUi'
 import CheckboxUi from 'xtraplatform-manager/src/components/common/CheckboxUi';
 import SelectUi from 'xtraplatform-manager/src/components/common/SelectUi';
 import { shallowDiffers } from 'xtraplatform-manager/src/util';
+import uiValidator, { forbiddenChars } from 'xtraplatform-manager/src/components/common/ui-validator';
 
 const initState = {
     enabled: (props) => props.mapping.enabled || false,
+    // TODO: move default value to backend
     name: (props) => props.mapping.name ? props.mapping.name : (props.isFeatureType && props.mimeType === 'text/html' ? '{{id}}' : ''),
     mappingType: (props) => props.mapping.mappingType || '',
     baseMapping: (props) => props.baseMapping
@@ -51,6 +53,10 @@ const initState = {
 @ui({
     state: initState
 })
+
+@uiValidator({
+    name: forbiddenChars("\\s\"\\\\")
+}, true)
 
 export default class MappingEdit extends Component {
 
@@ -80,15 +86,17 @@ export default class MappingEdit extends Component {
     }
 
     save = () => {
-        const {ui, mimeType, onChange} = this.props;
+        const {ui, validator, mimeType, onChange} = this.props;
 
-        onChange({
-            [mimeType]: [ui]
-        });
+        if (validator.valid) {
+            onChange({
+                [mimeType]: [ui]
+            });
+        }
     }
 
     render() {
-        let {ui, updateUI, mapping, baseMapping, mimeType, title, heading, smaller, isFeatureType, isSaving, children} = this.props;
+        let {ui, validator, updateUI, mapping, baseMapping, mimeType, title, heading, smaller, isFeatureType, isSaving, children} = this.props;
 
         const header = <Heading tag={ heading }
                            strong={ true }
@@ -114,7 +122,7 @@ export default class MappingEdit extends Component {
                                                                                              onDebounce={ this.save } /> }
                                 </Header>
                                 <Collapsible active={ ui.enabled && baseMapping.enabled }>
-                                    { (!isFeatureType || mimeType === 'text/html') && <FormField label="Name">
+                                    { (!isFeatureType || mimeType === 'text/html') && <FormField label="Name" error={ validator.messages.name }>
                                                                                           <TextInputUi name="name"
                                                                                               value={ ui.name }
                                                                                               placeHolder={ baseMapping.name }

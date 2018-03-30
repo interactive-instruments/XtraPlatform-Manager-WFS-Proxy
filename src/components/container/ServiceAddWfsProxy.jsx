@@ -23,26 +23,61 @@ import React, { Component } from 'react';
 import ui from 'redux-ui';
 
 import FormField from 'grommet/components/FormField';
+import Header from 'grommet/components/Header';
 
 import TextInputUi from 'xtraplatform-manager/src/components/common/TextInputUi';
+import PasswordInputUi from 'xtraplatform-manager/src/components/common/PasswordInputUi';
+import CheckboxUi from 'xtraplatform-manager/src/components/common/CheckboxUi';
 import ServiceAdd from 'xtraplatform-manager/src/components/container/ServiceAdd'
 
+import uiValidator, { url } from 'xtraplatform-manager/src/components/common/ui-validator';
 
 @ui({
     state: {
         url: '',
-        type: 'ldproxy'
+        type: 'ldproxy',
+        isBasicAuth: false,
+        user: '',
+        password: ''
     }
 })
+
+@uiValidator({
+    url: url()
+})
+
 export default class ServiceAddWfsProxy extends Component {
 
     render() {
         const {ui, updateUI, ...rest} = this.props;
+        const {validator} = this.props;
 
         return (
             <ServiceAdd {...rest}>
-                <FormField label="WFS URL" style={ { width: '100%' } }>
+                <FormField label="WFS URL"
+                    error={ validator.messages.url }
+                    help="The GetCapabilities endpoint of the existing service"
+                    style={ { width: '100%' } }>
                     <TextInputUi name="url" value={ ui.url } onChange={ updateUI } />
+                </FormField>
+                <FormField label="Basic Auth" help="Is the WFS secured with HTTP Basic Authentication?" style={ { width: '100%' } }>
+                    <CheckboxUi name="isBasicAuth"
+                        checked={ ui.isBasicAuth }
+                        toggle={ false }
+                        reverse={ false }
+                        onChange={ updateUI } />
+                </FormField>
+                <FormField label="User"
+                    help="The HTTP Basic Authentication user name"
+                    style={ { width: '100%' } }
+                    hidden={ !ui.isBasicAuth }>
+                    <TextInputUi name="user" value={ ui.user } onChange={ updateUI } />
+                </FormField>
+                <FormField label="Password"
+                    help="The HTTP Basic Authentication password"
+                    style={ { width: '100%' } }
+                    hidden={ !ui.isBasicAuth }>
+                    <PasswordInputUi name="password" value={ ui.password } onChange={ updateUI } />
                 </FormField>
             </ServiceAdd>
         );
