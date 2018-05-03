@@ -26,7 +26,7 @@ import ServiceApi from 'xtraplatform-manager/src/apis/ServiceApi'
 const ServiceApiWfsProxy = {
     getServiceConfigQuery: function(id) {
         return {
-            url: `/rest/admin/services/${id}/config/`,
+            url: `${ServiceApi.URL}${id}/config/`,
             transform: (serviceConfig) => normalizeServiceConfigs([serviceConfig]).entities,
             update: {
                 serviceConfigs: (prev, next) => next,
@@ -45,7 +45,7 @@ const ServiceApiWfsProxy = {
             }
         });
         return {
-            url: `/rest/admin/services/${id}/`,
+            url: `${ServiceApi.URL}${id}/`,
             body: JSON.stringify({
                 id: id,
                 featureTypes: {
@@ -71,7 +71,7 @@ const ServiceApiWfsProxy = {
 
     parseCatalogQuery: function(url) {
         return {
-            url: `/rest/catalog/`,
+            url: `../rest/catalog/`,
             transform: (catalog) => ({
                 catalog: catalog
             }),
