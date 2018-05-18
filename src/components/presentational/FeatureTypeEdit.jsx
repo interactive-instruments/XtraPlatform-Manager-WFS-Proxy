@@ -40,15 +40,23 @@ import MoreIcon from 'grommet/components/icons/base/More';
 import AddIcon from 'grommet/components/icons/base/Add';
 import MinusIcon from 'grommet/components/icons/base/Subtract';
 import RadialIcon from 'grommet/components/icons/base/Radial';
+import ClockIcon from 'grommet/components/icons/base/Clock';
+import LocationIcon from 'grommet/components/icons/base/Location';
+import TableIcon from 'grommet/components/icons/base/Table';
+import FingerPrintIcon from 'grommet/components/icons/base/FingerPrint';
+import FilterIcon from 'grommet/components/icons/base/Filter';
 import StatusIcon from 'grommet/components/icons/Status';
 import Animate from 'grommet/components/Animate';
 import Collapsible from 'grommet/components/Collapsible';
 import ListPlaceholder from 'grommet-addons/components/ListPlaceholder';
 
 import Anchor from 'xtraplatform-manager/src/components/common/AnchorLittleRouter';
+import Badge from 'xtraplatform-manager/src/components/common/GrommetBadge';
+import CheckboxUi from 'xtraplatform-manager/src/components/common/CheckboxUi';
 
 import PropertyEdit from '../presentational/PropertyEdit';
 import FeatureTypeEditGeneral from '../presentational/FeatureTypeEditGeneral';
+import FeatureTypeEditExtent from '../presentational/FeatureTypeEditExtent';
 import FeatureTypeEditProperties from '../presentational/FeatureTypeEditProperties';
 
 import { shallowDiffers } from 'xtraplatform-manager/src/util';
@@ -127,6 +135,30 @@ export default class FeatureTypeEdit extends Component {
         return displayKey;
     }
 
+    _iconify(path, mapping) {
+        return mapping.filterable && mapping.type === 'SPATIAL' ? <span><span style={ { marginRight: '5px' } }>{ path }</span>
+                                                                  <Badge title="Used for bbox filters">
+                                                                      <FilterIcon size="xsmall" colorIndex="light-1" /> </Badge>
+                                                                  </span>
+            : mapping.filterable && mapping.type === 'TEMPORAL' ? <span><span style={ { marginRight: '5px' } }>{ path }</span>
+                                                                  <Badge title="Used for time filters">
+                                                                      <FilterIcon size="xsmall" colorIndex="light-1" /> </Badge>
+                                                                  </span>
+                : mapping.filterable ? <span><span style={ { marginRight: '5px' } }>{ path }</span>
+                                       <Badge title="Usable in filters">
+                                           <FilterIcon size="xsmall" colorIndex="light-1" /> </Badge>
+                                       </span>
+                    : path;
+    }
+
+    _getTypeIcon(type) {
+        return type === 'SPATIAL' ? <LocationIcon size="xsmall" title="spatial" />
+            : type === 'TEMPORAL' ? <ClockIcon size="xsmall" title="temporal" />
+                : type === 'VALUE' ? <TableIcon size="xsmall" title="value" />
+                    : type === 'ID' ? <FingerPrintIcon size="xsmall" title="id" />
+                        : null
+    }
+
     _renderProperties(featureType, mappings, mappingStatus) {
         const properties = Object.keys(mappings).filter((key) => key !== featureType.id);
 
@@ -164,7 +196,23 @@ export default class FeatureTypeEdit extends Component {
 
             leafs.push({
                 _id: key,
-                title: this._beautify(path),
+                title: this._iconify(this._beautify(path), mappings[key]['general'][0]),
+                icon: this._getTypeIcon(mappings[key]['general'][0].type),
+                iconTitle: mappings[key]['general'][0].type,
+                /*right: <span onClick={ (e) => {
+                    e.stopPropagation();
+                } }><CheckboxUi name="enabled"
+                                                              checked={ true }
+                                                              disabled={ false }
+                                                              toggle={ true }
+                                                              reverse={ false }
+                                                              smaller={ true }
+                                                              className={ { 'xtraplatform-checkbox-ui': true, 'xtraplatform-full': false, 'xtraplatform-smaller': true } }
+                                                              onChange={ (a, b) => {
+                                                                             console.log(a, b)
+                                                                         } }
+                                                              onDebounce={ this._save } /></span>,
+                */
                 parent: parent
             })
 
@@ -232,6 +280,7 @@ export default class FeatureTypeEdit extends Component {
                     </Header>
                     <Article pad="none" align="start" primary={ true }>
                         <FeatureTypeEditGeneral featureType={ featureType } onChange={ this._onFeatureTypeChange } />
+                        <FeatureTypeEditExtent featureType={ featureType } onChange={ this._onFeatureTypeChange } />
                         { properties }
                         <Box pad={ { vertical: 'medium' } } />
                     </Article>

@@ -96,7 +96,7 @@ export default class MappingEdit extends Component {
     }
 
     render() {
-        let {ui, validator, updateUI, mapping, baseMapping, mimeType, title, heading, smaller, isFeatureType, isSaving, children} = this.props;
+        let {ui, validator, updateUI, mapping, baseMapping, mimeType, title, heading, smaller, isFeatureType, showName, isSaving, children} = this.props;
 
         const header = <Heading tag={ heading }
                            strong={ true }
@@ -122,13 +122,13 @@ export default class MappingEdit extends Component {
                                                                                              onDebounce={ this.save } /> }
                                 </Header>
                                 <Collapsible active={ ui.enabled && baseMapping.enabled }>
-                                    { (!isFeatureType || mimeType === 'text/html') && <FormField label="Name" error={ validator.messages.name }>
-                                                                                          <TextInputUi name="name"
-                                                                                              value={ ui.name }
-                                                                                              placeHolder={ baseMapping.name }
-                                                                                              onChange={ updateUI }
-                                                                                              onDebounce={ this.save } />
-                                                                                      </FormField> }
+                                    { showName && <FormField label="Name" error={ validator.messages.name }>
+                                                      <TextInputUi name="name"
+                                                          value={ ui.name }
+                                                          placeHolder={ baseMapping.name }
+                                                          onChange={ updateUI }
+                                                          onDebounce={ this.save } />
+                                                  </FormField> }
                                     { React.Children.map(children,
                                           (child) => {
                                               //console.log(child);
@@ -153,6 +153,7 @@ MappingEdit.propTypes = {
     smaller: PropTypes.bool.isRequired,
     mimeType: PropTypes.string.isRequired,
     isFeatureType: PropTypes.bool.isRequired,
+    showName: PropTypes.bool.isRequired,
     mapping: PropTypes.object.isRequired,
     baseMapping: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired
