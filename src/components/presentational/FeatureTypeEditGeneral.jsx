@@ -36,7 +36,7 @@ import TextInputUi from 'xtraplatform-manager/src/components/common/TextInputUi'
 @ui({
     //key: 'FeatureTypeEditGeneral',
     state: {
-        displayName: (props) => props.featureType.displayName || ''
+        label: (props) => props.featureType.label || ''
     }
 })
 
@@ -62,11 +62,11 @@ export default class FeatureTypeEditGeneral extends Component {
                                    <FormFields>
                                        <fieldset>
                                            <FormField label="Id">
-                                               <TextInput name="name" value={ featureType.name } disabled={ true } />
+                                               <TextInput name="name" value={ featureType.origId } disabled={ true } />
                                            </FormField>
                                            <FormField label="Display name">
-                                               <TextInputUi name="displayName"
-                                                   value={ ui.displayName }
+                                               <TextInputUi name="label"
+                                                   value={ ui.label }
                                                    onChange={ updateUI }
                                                    onDebounce={ this._save } />
                                            </FormField>

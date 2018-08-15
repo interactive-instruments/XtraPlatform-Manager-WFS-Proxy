@@ -80,7 +80,7 @@ export default class FeatureTypeEdit extends Component {
                 //|| this.props.queryPending !== nextProps.queryPending
                 //|| this.props.queryFinished !== nextProps.queryFinished
                 || shallowDiffers(this.props.mappings[this.props.selectedProperty], nextProps.mappings[nextProps.selectedProperty])
-                || shallowDiffers(this.props.service.serviceProperties.mappingStatus, nextProps.service.serviceProperties.mappingStatus)
+        //TODO|| shallowDiffers(this.props.service.serviceProperties.mappingStatus, nextProps.service.serviceProperties.mappingStatus)
         ) {
             //console.log('UP FT', this.props.featureType, nextProps.featureType)
             return true;
@@ -196,9 +196,9 @@ export default class FeatureTypeEdit extends Component {
 
             leafs.push({
                 _id: key,
-                title: this._iconify(this._beautify(path), mappings[key]['general'][0]),
-                icon: this._getTypeIcon(mappings[key]['general'][0].type),
-                iconTitle: mappings[key]['general'][0].type,
+                title: this._iconify(this._beautify(path), mappings[key]['general']),
+                icon: this._getTypeIcon(mappings[key]['general'].type),
+                iconTitle: mappings[key]['general'].type,
                 /*right: <span onClick={ (e) => {
                     e.stopPropagation();
                 } }><CheckboxUi name="enabled"
@@ -274,7 +274,7 @@ export default class FeatureTypeEdit extends Component {
                             margin="none"
                             strong={ true }
                             truncate={ true }>
-                            { featureType.displayName }
+                            { featureType.label }
                         </Heading>
                         { /*sidebarControl*/ }
                     </Header>

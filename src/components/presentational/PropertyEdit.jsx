@@ -56,7 +56,7 @@ export default class PropertyEdit extends Component {
                     { Object.keys(mappings).map(
                           (mimeType, i) => {
                               if (i === 0) {
-                                  baseMapping = mappings[mimeType][0];
+                                  baseMapping = mappings[mimeType];
                               }
                               const MappingEdit = getTypedComponent('MappingEdit', mimeType)
                               //console.log('ME', mimeType, MappingEdit)
@@ -69,7 +69,7 @@ export default class PropertyEdit extends Component {
                                                         <MappingEdit key={ mimeType }
                                                             title={ title }
                                                             mimeType={ mimeType }
-                                                            mapping={ mappings[mimeType][0] }
+                                                            mapping={ mappings[mimeType] }
                                                             baseMapping={ baseMapping }
                                                             isFeatureType={ isFeatureType }
                                                             onChange={ this._onMappingChange } />

@@ -24,7 +24,7 @@ export const getFeatureTypes = (state) => {
             //fts[key] = state.entities.featureTypes[key]
             fts.push(state.entities.featureTypes[key])
         }
-        fts = fts.sort((a, b) => a.name > b.name ? 1 : -1);
+        fts = fts.sort((a, b) => a.label > b.label ? 1 : -1);
     }
     return fts;
 }
@@ -32,7 +32,7 @@ export const getFeatureType = (state) => {
     const service = getService(state);
     if (service && state.entities.featureTypes) {
         for (var key in state.entities.featureTypes) {
-            if (state.entities.featureTypes[key].name === getSelectedFeatureType(state)) {
+            if (state.entities.featureTypes[key].id === getSelectedFeatureType(state)) {
                 return state.entities.featureTypes[key];
             }
         }

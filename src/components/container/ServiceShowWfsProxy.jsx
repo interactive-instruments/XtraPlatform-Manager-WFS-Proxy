@@ -86,8 +86,8 @@ export default class ServiceShowWfsProxy extends Component {
         let fts = []
 
         if (featureTypes)
-            fts = featureTypes.map((ft, i) => <ListItem key={ ft.id } separator={ i === 0 ? 'horizontal' : 'bottom' } onClick={ this._select(ft.name) }>
-                                                  { ft.displayName }
+            fts = featureTypes.map((ft, i) => <ListItem key={ ft.id } separator={ i === 0 ? 'horizontal' : 'bottom' } onClick={ this._select(ft.id) }>
+                                                  { ft.label }
                                               </ListItem>)
         return (
             <Section pad={ { vertical: 'medium' } } full="horizontal">

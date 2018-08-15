@@ -14,8 +14,8 @@ import CheckboxUi from 'xtraplatform-manager/src/components/common/CheckboxUi';
 
 @ui({
     state: {
-        code: (props) => props.service.wfsAdapter.defaultCrs.code,
-        longitudeFirst: (props) => props.service.wfsAdapter.defaultCrs.longitudeFirst
+        code: (props) => props.service.featureProvider.nativeCrs.code,
+        forceLongitudeFirst: (props) => props.service.featureProvider.nativeCrs.forceLongitudeFirst
     }
 })
 export default class ServiceEditWfsSettings extends Component {
@@ -25,8 +25,9 @@ export default class ServiceEditWfsSettings extends Component {
 
         //if (validator.valid) {
         onChange({
-            wfsAdapter: {
-                defaultCrs: ui
+            featureProvider: {
+                providerType: 'WFS', //TODO
+                nativeCrs: ui
             }
         });
     //}
@@ -46,8 +47,8 @@ export default class ServiceEditWfsSettings extends Component {
                     <FormFields>
                         <fieldset>
                             <FormField label={ "Reversed axis order for default CRS" + (ui.code ? ` (EPSG:${ui.code})` : "") }>
-                                <CheckboxUi name="longitudeFirst"
-                                    checked={ ui.longitudeFirst }
+                                <CheckboxUi name="forceLongitudeFirst"
+                                    checked={ ui.forceLongitudeFirst }
                                     toggle={ false }
                                     reverse={ false }
                                     onChange={ updateUI }

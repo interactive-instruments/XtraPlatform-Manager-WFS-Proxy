@@ -131,9 +131,10 @@ export default class FeatureTypeShow extends Component {
         const {service, featureType, reloadPending, queryFinished, reloadService} = this.props;
         //console.log('SEL', this.props.selectedProperty, featureType)
 
-        if (!reloadPending && service && service.serviceProperties.mappingStatus.loading) {
+        //TODO
+        /*if (!reloadPending && service && service.serviceProperties.mappingStatus.loading) {
             reloadService(service);
-        }
+        }*/
 
         return (
             (service && featureType) &&

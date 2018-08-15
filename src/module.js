@@ -13,7 +13,7 @@ import ServiceAddCatalog from './components/container/ServiceAddCatalog'
 import MappingEdit from './components/presentational/MappingEdit'
 
 export default {
-    serviceTypes: ['ldproxy'],
+    serviceTypes: ['WFS3'],
     routes: {
         path: '/',
         routes: [
@@ -37,10 +37,10 @@ export default {
     },
     typedComponents: {
         ServiceAdd: {
-            ldproxy: ServiceAddWfsProxy
+            WFS3: ServiceAddWfsProxy
         },
         ServiceShow: {
-            ldproxy: ServiceShowWfsProxy
+            WFS3: ServiceShowWfsProxy
         },
         MappingEdit: {
             base: MappingEdit

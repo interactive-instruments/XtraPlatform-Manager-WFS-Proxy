@@ -39,7 +39,7 @@ class FeatureTypeEditProperties extends Component {
         const showButton = mappingStatus && !mappingStatus.enabled;
         const showLoading = mappingStatus && mappingStatus.enabled && mappingStatus.loading;
         const showError = mappingStatus && mappingStatus.enabled && !mappingStatus.loading && !mappingStatus.supported;
-        const showMapping = mappingStatus && mappingStatus.enabled && mappingStatus.supported && !mappingStatus.loading;
+        const showMapping = true; //mappingStatus && mappingStatus.enabled && mappingStatus.supported && !mappingStatus.loading;
 
         return (
             <Section pad={ { vertical: 'none' } } full="horizontal">

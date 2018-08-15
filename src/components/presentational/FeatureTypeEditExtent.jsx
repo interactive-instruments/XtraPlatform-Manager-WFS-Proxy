@@ -49,8 +49,8 @@ const validateTemporalBoundary = (isStart) => (value, ui) => {
 @ui({
     //key: 'FeatureTypeEditGeneral',
     state: {
-        start: (props) => props.featureType.temporalExtent ? moment.utc(props.featureType.temporalExtent.start).format() : moment.utc().format(),
-        end: (props) => props.featureType.temporalExtent ? props.featureType.temporalExtent.end === 0 ? '' : moment.utc(props.featureType.temporalExtent.end).format() : ''
+        start: (props) => props.featureType.extent.temporal ? moment.utc(props.featureType.extent.temporal.start).format() : moment.utc().format(),
+        end: (props) => props.featureType.extent.temporal ? props.featureType.extent.temporal.end === 0 ? '' : moment.utc(props.featureType.extent.temporal.end).format() : ''
     }
 })
 
@@ -65,9 +65,11 @@ export default class FeatureTypeEditGeneral extends Component {
         const {ui, validator, onChange} = this.props;
         if (validator.valid) {
             onChange({
-                temporalExtent: {
-                    start: moment.utc(ui.start).valueOf(),
-                    end: ui.end === '' ? 0 : moment.utc(ui.end).valueOf()
+                extent: {
+                    temporal: {
+                        start: moment.utc(ui.start).valueOf(),
+                        end: ui.end === '' ? 0 : moment.utc(ui.end).valueOf()
+                    }
                 }
             });
         }
