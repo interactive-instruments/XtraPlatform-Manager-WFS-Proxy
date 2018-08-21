@@ -105,7 +105,7 @@ export default class FeatureTypeEdit extends Component {
         const {service, featureType, updateFeatureType} = this.props;
 
         //console.log('SAVE', service.id, featureType.id, change)
-        updateFeatureType(service.id, featureType.id, featureType.qn, change);
+        updateFeatureType(service.id, featureType.origId, featureType.qn, change);
     }
 
     _enableMapping = () => {

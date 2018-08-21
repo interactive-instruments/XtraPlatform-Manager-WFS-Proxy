@@ -90,7 +90,7 @@ export default class MappingEdit extends Component {
 
         if (validator.valid) {
             onChange({
-                [mimeType]: [ui]
+                [mimeType]: ui
             });
         }
     }

@@ -34,12 +34,13 @@ import Form from 'grommet/components/Form';
 export default class PropertyEdit extends Component {
 
     _onMappingChange = (change) => {
-        const {qn, onChange} = this.props;
+        const {qn, onChange, mappings} = this.props;
         console.log(qn, change);
         onChange({
             mappings: {
-                mappings: {
-                    [qn]: change
+                [qn]: {
+                    ...mappings,
+                    ...change
                 }
             }
         });

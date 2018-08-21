@@ -24,20 +24,30 @@ const ServiceApiWfsProxy = {
     },
 
     updateFeatureTypeQuery: function(id, ftid, ftqn, change) {
-        console.log({
-            id: id,
-            featureTypes: {
-                [ftqn]: change
+        var body;
+        if (change.mappings) {
+            body = {
+                id: id,
+                featureProvider: {
+                    providerType: 'WFS', //TODO
+                    mappings: {
+                        [ftid]: change.mappings
+                    }
+                }
             }
-        });
-        return {
-            url: `${ServiceApi.URL}${id}/`,
-            body: JSON.stringify({
+        } else {
+            body = {
                 id: id,
                 featureTypes: {
-                    [ftqn]: change
+                    [ftid]: change
                 }
-            }),
+            }
+        }
+        console.log(body);
+
+        return {
+            url: `${ServiceApi.URL}${id}/`,
+            body: JSON.stringify(body),
             options: {
                 method: 'POST',
                 headers: {

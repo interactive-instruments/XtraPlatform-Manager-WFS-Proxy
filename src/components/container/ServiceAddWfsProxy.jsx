@@ -35,7 +35,7 @@ import uiValidator, { url } from 'xtraplatform-manager/src/components/common/ui-
 @ui({
     state: {
         url: '',
-        type: 'ldproxy',
+        serviceType: 'WFS3',
         isBasicAuth: false,
         user: '',
         password: ''
