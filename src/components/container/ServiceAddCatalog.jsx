@@ -90,7 +90,11 @@ import Anchor from 'xtraplatform-manager/src/components/common/AnchorLittleRoute
                             props.updateUI({
                                 loading: false,
                                 loaded: false,
-                                error: result.body && result.body.error || {}
+                                errors: result.body && result.body.description ? [...props.ui.errors, {
+                                    message: result.body.description,
+                                    details: []
+                                }] : props.ui.errors,
+                                showErrors: true
                             })
                         }
                     })
@@ -156,9 +160,25 @@ export default class ServiceAddCatalog extends Component {
 
             const service = {
                 id: baseId + '_' + counter++,
-                type: 'ldproxy',
-                disableMapping: true,
-                url: url
+                serviceType: 'WFS3',
+                //disableMapping: true,
+                //url: url
+                featureProvider: {
+                    providerType: 'WFS',
+                    connectionInfo: {
+                        uri: url,
+                        //TODO: defaults
+                        method: 'GET',
+                        version: '2.0.0',
+                        gmlVersion: '3.2.1'
+                    },
+                    nativeCrs: {
+                        code: 4326
+                    },
+                    mappingStatus: {
+                        enabled: false
+                    }
+                }
             }
             const lastService = service2;
             var query = ServiceApi.addServiceQuery(service);
@@ -267,9 +287,9 @@ export default class ServiceAddCatalog extends Component {
                                                                                                         { error.message }
                                                                                                     </td>
                                                                                                     <td className='secondary'>
-                                                                                                        { error.details.map(detail => <Paragraph margin='none'>
-                                                                                                                                          { detail }
-                                                                                                                                      </Paragraph>) }
+                                                                                                        { error.details && error.details.map(detail => <Paragraph margin='none'>
+                                                                                                                                                           { detail }
+                                                                                                                                                       </Paragraph>) }
                                                                                                     </td>
                                                                                                 </TableRow>) }
                                                                    </tbody>
