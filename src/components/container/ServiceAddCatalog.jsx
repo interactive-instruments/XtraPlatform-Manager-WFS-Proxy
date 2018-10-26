@@ -176,7 +176,8 @@ export default class ServiceAddCatalog extends Component {
                         code: 4326
                     },
                     mappingStatus: {
-                        enabled: false
+                        enabled: false,
+                        supported: false
                     }
                 }
             }
