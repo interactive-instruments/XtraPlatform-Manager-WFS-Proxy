@@ -80,7 +80,7 @@ export default class FeatureTypeEdit extends Component {
                 //|| this.props.queryPending !== nextProps.queryPending
                 //|| this.props.queryFinished !== nextProps.queryFinished
                 || shallowDiffers(this.props.mappings[this.props.selectedProperty], nextProps.mappings[nextProps.selectedProperty])
-        //TODO|| shallowDiffers(this.props.service.serviceProperties.mappingStatus, nextProps.service.serviceProperties.mappingStatus)
+                || shallowDiffers(this.props.service.featureProvider.mappingStatus, nextProps.service.featureProvider.mappingStatus)
         ) {
             //console.log('UP FT', this.props.featureType, nextProps.featureType)
             return true;
@@ -113,10 +113,10 @@ export default class FeatureTypeEdit extends Component {
         console.log('_enableMapping')
         updateService({
             id: service.id,
-            serviceProperties: {
+            featureProvider: {
+                providerType: 'WFS', //TODO
                 mappingStatus: {
-                    enabled: true,
-                    loading: true
+                    enabled: true
                 }
             }
         });
@@ -136,18 +136,18 @@ export default class FeatureTypeEdit extends Component {
     }
 
     _iconify(path, mapping) {
-        return mapping.filterable && mapping.type === 'SPATIAL' ? <span><span style={ { marginRight: '5px' } }>{ path }</span>
-                                                                  <Badge title="Used for bbox filters">
-                                                                      <FilterIcon size="xsmall" colorIndex="light-1" /> </Badge>
-                                                                  </span>
-            : mapping.filterable && mapping.type === 'TEMPORAL' ? <span><span style={ { marginRight: '5px' } }>{ path }</span>
-                                                                  <Badge title="Used for time filters">
-                                                                      <FilterIcon size="xsmall" colorIndex="light-1" /> </Badge>
-                                                                  </span>
-                : mapping.filterable ? <span><span style={ { marginRight: '5px' } }>{ path }</span>
-                                       <Badge title="Usable in filters">
-                                           <FilterIcon size="xsmall" colorIndex="light-1" /> </Badge>
-                                       </span>
+        return mapping && mapping.filterable && mapping.type === 'SPATIAL' ? <span><span style={ { marginRight: '5px' } }>{ path }</span>
+                                                                             <Badge title="Used for bbox filters">
+                                                                                 <FilterIcon size="xsmall" colorIndex="light-1" /> </Badge>
+                                                                             </span>
+            : mapping && mapping.filterable && mapping.type === 'TEMPORAL' ? <span><span style={ { marginRight: '5px' } }>{ path }</span>
+                                                                             <Badge title="Used for time filters">
+                                                                                 <FilterIcon size="xsmall" colorIndex="light-1" /> </Badge>
+                                                                             </span>
+                : mapping && mapping.filterable ? <span><span style={ { marginRight: '5px' } }>{ path }</span>
+                                                  <Badge title="Usable in filters">
+                                                      <FilterIcon size="xsmall" colorIndex="light-1" /> </Badge>
+                                                  </span>
                     : path;
     }
 
@@ -197,8 +197,8 @@ export default class FeatureTypeEdit extends Component {
             leafs.push({
                 _id: key,
                 title: this._iconify(this._beautify(path), mappings[key]['general']),
-                icon: this._getTypeIcon(mappings[key]['general'].type),
-                iconTitle: mappings[key]['general'].type,
+                icon: mappings[key]['general'] ? this._getTypeIcon(mappings[key]['general'].type) : null,
+                iconTitle: mappings[key]['general'] ? mappings[key]['general'].type : null,
                 /*right: <span onClick={ (e) => {
                     e.stopPropagation();
                 } }><CheckboxUi name="enabled"
@@ -219,12 +219,14 @@ export default class FeatureTypeEdit extends Component {
             return leafs
         }, [])
         // TODO: remove name, type, showIncollection if not used
-        tree.unshift({
-            _id: featureType.id,
-            title: this._beautify(featureType.qn),
-            expandable: true,
-            parent: null
-        })
+        if (mappingStatus.enabled && mappingStatus.supported) {
+            tree.unshift({
+                _id: featureType.id,
+                title: this._beautify(featureType.qn),
+                expandable: true,
+                parent: null
+            })
+        }
 
         return (
             <FeatureTypeEditProperties tree={ tree }
@@ -238,24 +240,26 @@ export default class FeatureTypeEdit extends Component {
 
     render() {
         const {featureType, service, mappings, selectedProperty, getTypedComponent, queryPending, queryFinished} = this.props;
-        const mappingStatus = service && service.serviceProperties && service.serviceProperties.mappingStatus;
+        const mappingStatus = service && service.featureProvider && service.featureProvider.mappingStatus;
 
         //const {prop} = this.state;
         let properties,
             general,
             cleanMapping,
             localSelectedProperty;
-        if (mappings && featureType) {
-            properties = this._renderProperties(featureType, mappings, mappingStatus);
-        }
-        if (selectedProperty) {
-            localSelectedProperty = selectedProperty
-        } else if (featureType) {
-            localSelectedProperty = featureType.id
-        }
-        if (mappings && localSelectedProperty && mappings[localSelectedProperty]) {
-            let {id, index, qn, ...rest} = mappings[localSelectedProperty];
-            cleanMapping = rest;
+        if (service.featureProvider && service.featureProvider.providerType === 'WFS') {
+            if (mappings && featureType) {
+                properties = this._renderProperties(featureType, mappings, mappingStatus);
+            }
+            if (selectedProperty) {
+                localSelectedProperty = selectedProperty
+            } else if (featureType) {
+                localSelectedProperty = featureType.id
+            }
+            if (mappings && localSelectedProperty && mappings[localSelectedProperty]) {
+                let {id, index, qn, ...rest} = mappings[localSelectedProperty];
+                cleanMapping = rest;
+            }
         }
 
         return (

@@ -127,6 +127,12 @@ import ServiceApi from '../../apis/ServiceApiWfsProxy'
 
 export default class FeatureTypeShow extends Component {
 
+    constructor() {
+        super();
+        this.timer = null
+        this.counter = 0
+    }
+
     render() {
         const {service, featureType, reloadPending, queryFinished, reloadService} = this.props;
         //console.log('SEL', this.props.selectedProperty, featureType)
@@ -135,6 +141,20 @@ export default class FeatureTypeShow extends Component {
         /*if (!reloadPending && service && service.serviceProperties.mappingStatus.loading) {
             reloadService(service);
         }*/
+
+        const updateService = !reloadPending && service && service.featureProvider && service.featureProvider.mappingStatus.enabled && !service.featureProvider.mappingStatus.supported;
+
+        if (!this.timer && this.counter < 30 && updateService) {
+            console.log('UP');
+            this.timer = setTimeout(() => {
+                console.log('UPPED');
+                this.timer = null;
+                this.counter++;
+                reloadService(service);
+            }, 1000);
+        } else {
+            this.counter = 0;
+        }
 
         return (
             (service && featureType) &&

@@ -1,20 +1,34 @@
 {
   "presets": [
-    ["es2015", {"modules": false}],
-    //"es2015",
-    // webpack understands the native import syntax, and uses it for tree shaking
-
-    "stage-2",
-    // Specifies what level of language features to activate.
-    // Stage 2 is "draft", 4 is finished, 0 is strawman.
-    // See https://tc39.github.io/process-document/
-
-    "react"
-    // Transpile React components to JavaScript
+    [
+      "@babel/preset-env",
+      {
+        "modules": false
+      }
+    ],
+    "@babel/preset-react"
   ],
   "plugins": [
     "react-hot-loader/babel",
-    // Enables React code to work with HMR.
-    "transform-decorators-legacy"
+    "@babel/plugin-syntax-dynamic-import",
+    "@babel/plugin-syntax-import-meta",
+    "@babel/plugin-proposal-json-strings",
+    [
+      "@babel/plugin-proposal-decorators",
+      {
+        "legacy": true
+      }
+    ],
+    [
+      "@babel/plugin-proposal-class-properties",
+      {
+        "loose": true
+      }
+    ],
+    "@babel/plugin-proposal-function-sent",
+    "@babel/plugin-proposal-export-namespace-from",
+    "@babel/plugin-proposal-numeric-separator",
+    "@babel/plugin-proposal-object-rest-spread",
+    "@babel/plugin-proposal-throw-expressions"
   ]
 }
