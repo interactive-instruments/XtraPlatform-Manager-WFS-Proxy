@@ -24,14 +24,17 @@ import PropTypes from 'prop-types';
 import ui from 'redux-ui';
 
 import Section from 'grommet/components/Section';
-import Box from 'grommet/components/Box';
-import Heading from 'grommet/components/Heading';
+
 import Form from 'grommet/components/Form';
 import FormFields from 'grommet/components/FormFields';
 import FormField from 'grommet/components/FormField';
 import TextInput from 'grommet/components/TextInput';
 
+import Accordion from 'grommet/components/Accordion';
+import AccordionPanel from 'grommet/components/AccordionPanel';
+
 import TextInputUi from 'xtraplatform-manager/src/components/common/TextInputUi';
+
 
 @ui({
     //key: 'FeatureTypeEditGeneral',
@@ -47,33 +50,38 @@ export default class FeatureTypeEditGeneral extends Component {
 
         onChange(ui);
     }
+ 
 
     render() {
         const {featureType, ui, updateUI, onChange} = this.props;
 
         return (
-            featureType && <Section pad={ { vertical: 'medium' } } full="horizontal">
-                               <Box pad={ { horizontal: 'medium' } } separator="bottom">
-                                   <Heading tag="h2">
-                                       General
-                                   </Heading>
-                               </Box>
-                               <Form compact={ false } pad={ { horizontal: 'medium', vertical: 'small' } }>
-                                   <FormFields>
-                                       <fieldset>
-                                           <FormField label="Id">
-                                               <TextInput name="name" value={ featureType.origId } disabled={ true } />
-                                           </FormField>
-                                           <FormField label="Display name">
-                                               <TextInputUi name="label"
-                                                   value={ ui.label }
-                                                   onChange={ updateUI }
-                                                   onDebounce={ this._save } />
-                                           </FormField>
-                                       </fieldset>
-                                   </FormFields>
-                               </Form>
-                           </Section>
+            
+            featureType && 
+
+            <Section pad={ { vertical: 'medium' } } full="horizontal">
+                <Accordion animate={true} multiple={true} active={0}>
+                    <AccordionPanel heading="General">            
+                        <Form compact={ false } pad={ { horizontal: 'medium', vertical: 'small' } }>
+                            <FormFields>
+                                <fieldset>
+                                    <FormField label="Id">
+                                        <TextInput name="name" value={ featureType.origId } disabled={ true } />
+                                    </FormField>
+                                    <FormField label="Display name">
+                                        <TextInputUi name="label"
+                                            value={ ui.label }
+                                            onChange={ updateUI }
+                                            onDebounce={ this._save } />
+                                    </FormField>
+                                </fieldset>
+                            </FormFields>
+                            
+                        </Form>
+                    </AccordionPanel>
+                </Accordion>
+            </Section>
+  
         );
     }
 }

@@ -47,7 +47,6 @@ import FingerPrintIcon from 'grommet/components/icons/base/FingerPrint';
 import FilterIcon from 'grommet/components/icons/base/Filter';
 import StatusIcon from 'grommet/components/icons/Status';
 import Animate from 'grommet/components/Animate';
-import Collapsible from 'grommet/components/Collapsible';
 import ListPlaceholder from 'grommet-addons/components/ListPlaceholder';
 
 import Anchor from 'xtraplatform-manager/src/components/common/AnchorLittleRouter';
@@ -60,6 +59,7 @@ import FeatureTypeEditExtent from '../presentational/FeatureTypeEditExtent';
 import FeatureTypeEditProperties from '../presentational/FeatureTypeEditProperties';
 
 import { shallowDiffers } from 'xtraplatform-manager/src/util';
+import FeatureTypeEditTiles from './FeatureTypeEditTiles';
 
 /*@ui({
     //key: 'FeatureTypeShow',
@@ -80,7 +80,7 @@ export default class FeatureTypeEdit extends Component {
                 //|| this.props.queryPending !== nextProps.queryPending
                 //|| this.props.queryFinished !== nextProps.queryFinished
                 || shallowDiffers(this.props.mappings[this.props.selectedProperty], nextProps.mappings[nextProps.selectedProperty])
-                || shallowDiffers(this.props.service.featureProvider.mappingStatus, nextProps.service.featureProvider.mappingStatus)
+        //TODO|| shallowDiffers(this.props.service.serviceProperties.mappingStatus, nextProps.service.serviceProperties.mappingStatus)
         ) {
             //console.log('UP FT', this.props.featureType, nextProps.featureType)
             return true;
@@ -113,10 +113,10 @@ export default class FeatureTypeEdit extends Component {
         console.log('_enableMapping')
         updateService({
             id: service.id,
-            featureProvider: {
-                providerType: 'WFS', //TODO
+            serviceProperties: {
                 mappingStatus: {
-                    enabled: true
+                    enabled: true,
+                    loading: true
                 }
             }
         });
@@ -136,18 +136,18 @@ export default class FeatureTypeEdit extends Component {
     }
 
     _iconify(path, mapping) {
-        return mapping && mapping.filterable && mapping.type === 'SPATIAL' ? <span><span style={ { marginRight: '5px' } }>{ path }</span>
-                                                                             <Badge title="Used for bbox filters">
-                                                                                 <FilterIcon size="xsmall" colorIndex="light-1" /> </Badge>
-                                                                             </span>
-            : mapping && mapping.filterable && mapping.type === 'TEMPORAL' ? <span><span style={ { marginRight: '5px' } }>{ path }</span>
-                                                                             <Badge title="Used for time filters">
-                                                                                 <FilterIcon size="xsmall" colorIndex="light-1" /> </Badge>
-                                                                             </span>
-                : mapping && mapping.filterable ? <span><span style={ { marginRight: '5px' } }>{ path }</span>
-                                                  <Badge title="Usable in filters">
-                                                      <FilterIcon size="xsmall" colorIndex="light-1" /> </Badge>
-                                                  </span>
+        return mapping.filterable && mapping.type === 'SPATIAL' ? <span><span style={ { marginRight: '5px' } }>{ path }</span>
+                                                                  <Badge title="Used for bbox filters">
+                                                                      <FilterIcon size="xsmall" colorIndex="light-1" /> </Badge>
+                                                                  </span>
+            : mapping.filterable && mapping.type === 'TEMPORAL' ? <span><span style={ { marginRight: '5px' } }>{ path }</span>
+                                                                  <Badge title="Used for time filters">
+                                                                      <FilterIcon size="xsmall" colorIndex="light-1" /> </Badge>
+                                                                  </span>
+                : mapping.filterable ? <span><span style={ { marginRight: '5px' } }>{ path }</span>
+                                       <Badge title="Usable in filters">
+                                           <FilterIcon size="xsmall" colorIndex="light-1" /> </Badge>
+                                       </span>
                     : path;
     }
 
@@ -197,8 +197,8 @@ export default class FeatureTypeEdit extends Component {
             leafs.push({
                 _id: key,
                 title: this._iconify(this._beautify(path), mappings[key]['general']),
-                icon: mappings[key]['general'] ? this._getTypeIcon(mappings[key]['general'].type) : null,
-                iconTitle: mappings[key]['general'] ? mappings[key]['general'].type : null,
+                icon: this._getTypeIcon(mappings[key]['general'].type),
+                iconTitle: mappings[key]['general'].type,
                 /*right: <span onClick={ (e) => {
                     e.stopPropagation();
                 } }><CheckboxUi name="enabled"
@@ -219,14 +219,12 @@ export default class FeatureTypeEdit extends Component {
             return leafs
         }, [])
         // TODO: remove name, type, showIncollection if not used
-        if (mappingStatus.enabled && mappingStatus.supported) {
-            tree.unshift({
-                _id: featureType.id,
-                title: this._beautify(featureType.qn),
-                expandable: true,
-                parent: null
-            })
-        }
+        tree.unshift({
+            _id: featureType.id,
+            title: this._beautify(featureType.qn),
+            expandable: true,
+            parent: null
+        })
 
         return (
             <FeatureTypeEditProperties tree={ tree }
@@ -240,26 +238,24 @@ export default class FeatureTypeEdit extends Component {
 
     render() {
         const {featureType, service, mappings, selectedProperty, getTypedComponent, queryPending, queryFinished} = this.props;
-        const mappingStatus = service && service.featureProvider && service.featureProvider.mappingStatus;
+        const mappingStatus = service && service.serviceProperties && service.serviceProperties.mappingStatus;
 
         //const {prop} = this.state;
         let properties,
             general,
             cleanMapping,
             localSelectedProperty;
-        if (service.featureProvider && service.featureProvider.providerType === 'WFS') {
-            if (mappings && featureType) {
-                properties = this._renderProperties(featureType, mappings, mappingStatus);
-            }
-            if (selectedProperty) {
-                localSelectedProperty = selectedProperty
-            } else if (featureType) {
-                localSelectedProperty = featureType.id
-            }
-            if (mappings && localSelectedProperty && mappings[localSelectedProperty]) {
-                let {id, index, qn, ...rest} = mappings[localSelectedProperty];
-                cleanMapping = rest;
-            }
+        if (mappings && featureType) {
+            properties = this._renderProperties(featureType, mappings, mappingStatus);
+        }
+        if (selectedProperty) {
+            localSelectedProperty = selectedProperty
+        } else if (featureType) {
+            localSelectedProperty = featureType.id
+        }
+        if (mappings && localSelectedProperty && mappings[localSelectedProperty]) {
+            let {id, index, qn, ...rest} = mappings[localSelectedProperty];
+            cleanMapping = rest;
         }
 
         return (
@@ -285,6 +281,7 @@ export default class FeatureTypeEdit extends Component {
                     <Article pad="none" align="start" primary={ true }>
                         <FeatureTypeEditGeneral featureType={ featureType } onChange={ this._onFeatureTypeChange } />
                         <FeatureTypeEditExtent featureType={ featureType } onChange={ this._onFeatureTypeChange } />
+                        <FeatureTypeEditTiles featureType={featureType} onChange={this._onFeatureTypeChange} />
                         { properties }
                         <Box pad={ { vertical: 'medium' } } />
                     </Article>
