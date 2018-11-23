@@ -100,16 +100,16 @@ import ServiceApi from '../../apis/ServiceApiWfsProxy'
 
                             // TODO: rollback ui
 
-                        /*dispatch(actions.addFailed({
-                            ...service,
-                            ...error,
-                            text: 'Failed to add service with id ' + service.id,
-                            status: 'critical'
-                        }))*/
+                            /*dispatch(actions.addFailed({
+                                ...service,
+                                ...error,
+                                text: 'Failed to add service with id ' + service.id,
+                                status: 'critical'
+                            }))*/
                         }
                     })
 
-            //dispatch(push('/services'))
+                //dispatch(push('/services'))
             },
             updateService: (service) => {
                 // TODO: return updated service on POST request
@@ -134,7 +134,7 @@ export default class FeatureTypeShow extends Component {
     }
 
     render() {
-        const {service, featureType, reloadPending, queryFinished, reloadService} = this.props;
+        const { service, featureType, reloadPending, queryFinished, reloadService } = this.props;
         //console.log('SEL', this.props.selectedProperty, featureType)
 
         //TODO
@@ -142,7 +142,7 @@ export default class FeatureTypeShow extends Component {
             reloadService(service);
         }*/
 
-        const updateService = !reloadPending && service && service.featureProvider && service.featureProvider.mappingStatus.enabled && !service.featureProvider.mappingStatus.supported;
+        const updateService = !reloadPending && service && service.featureProvider && service.featureProvider.mappingStatus && service.featureProvider.mappingStatus.enabled && !service.featureProvider.mappingStatus.supported;
 
         if (!this.timer && this.counter < 30 && updateService) {
             console.log('UP');
@@ -159,12 +159,11 @@ export default class FeatureTypeShow extends Component {
         return (
             (service && featureType) &&
             <div className="xtraplatform-toast">
-                { queryFinished && <Toast status='ok' size="medium" duration={ 1500 }>
-                                       Saved!
-                                   </Toast> }
-                <FeatureTypeEdit {...this.props}/>
+                {queryFinished && <Toast status='ok' size="medium" duration={1500}>
+                    Saved!
+                                   </Toast>}
+                <FeatureTypeEdit {...this.props} />
             </div>
         );
     }
 }
-
