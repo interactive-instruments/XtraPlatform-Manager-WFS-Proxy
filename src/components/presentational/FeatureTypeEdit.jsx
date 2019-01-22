@@ -279,7 +279,7 @@ export default class FeatureTypeEdit extends Component {
                         { /*sidebarControl*/ }
                     </Header>
                     <Article pad="none" align="start" primary={ true }>
-                        <FeatureTypeEditGeneral featureType={ featureType } onChange={ this._onFeatureTypeChange } />
+                        <FeatureTypeEditGeneral featureType={ featureType } onChange={ this._onFeatureTypeChange } service={service} />
                         <FeatureTypeEditExtent featureType={ featureType } onChange={ this._onFeatureTypeChange } />
                         <FeatureTypeEditTiles featureType={featureType} onChange={this._onFeatureTypeChange} />
                         { properties }

@@ -29,17 +29,29 @@ import Form from 'grommet/components/Form';
 import FormFields from 'grommet/components/FormFields';
 import FormField from 'grommet/components/FormField';
 import TextInput from 'grommet/components/TextInput';
+import Box from 'grommet/components/Box';
 
 import Accordion from 'grommet/components/Accordion';
 import AccordionPanel from 'grommet/components/AccordionPanel';
 
 import TextInputUi from 'xtraplatform-manager/src/components/common/TextInputUi';
+import CheckboxUi from 'xtraplatform-manager/src/components/common/CheckboxUi';
 
 
 @ui({
     //key: 'FeatureTypeEditGeneral',
     state: {
-        label: (props) => props.featureType.label || ''
+        label: (props) => props.featureType.label || '',
+        extensions: (props) => typeof    props.service.extensions === "undefined" ? null : props.service.extensions,
+        enabled: (props) => typeof    props.featureType.extensions=== "undefined" ? null 
+                          : typeof props.featureType.extensions.tilesExtension ==="undefined" ? null 
+                          : typeof props.featureType.extensions.tilesExtension.enabled === "undefined" ? null 
+                          : props.featureType.extensions.tilesExtension.enabled === null ? false 
+                          : props.featureType.extensions.tilesExtension.enabled 
+
+
+
+
     }
 })
 
@@ -47,7 +59,7 @@ export default class FeatureTypeEditGeneral extends Component {
 
     _save = () => {
         const {ui, onChange} = this.props;
-
+        ui.enabled = !ui.enabled
         onChange(ui);
     }
  
@@ -55,7 +67,39 @@ export default class FeatureTypeEditGeneral extends Component {
     render() {
         const {featureType, ui, updateUI, onChange} = this.props;
 
+        if(ui.extensions){
+            var numberOfExtensions=Object.keys(ui.extensions).length
+            for(var i=0; i < numberOfExtensions; i++){
+                if(Object.keys(ui.extensions)[i] ==="tilesExtension"){
+
+                    var displayTilesEnabled=[];
+
+                    var extensionType = Object.values(ui.extensions)[i].extensionType
+                    var extensionName = Object.keys(ui.extensions)[i]
+
+                    
+                    displayTilesEnabled.push(
+                        <Box pad={ {horizontal:'medium', vertical:'medium'} }>
+                            <CheckboxUi name={"enabled"}
+                                        label={extensionType}
+                                        checked={ui.enabled}
+                                        onChange={(field, value) =>  updateUI("extensions", 
+                                            { 
+                                                [extensionName]: {
+                                                    ...ui.extensions[extensionName], 
+                                                    [field]:value
+                                                }
+                                            }
+                                        )} 
+                                        //(field, value) =>  updateUI('setting', {...ui.setting, [field]: value})
+                                        onDebounce={this._save }/>  
+                        </Box>
+                        )
+                }
+            }
+        }
         return (
+        
             
             featureType && 
 
@@ -76,8 +120,8 @@ export default class FeatureTypeEditGeneral extends Component {
                                     </FormField>
                                 </fieldset>
                             </FormFields>
-                            
                         </Form>
+                        {displayTilesEnabled}
                     </AccordionPanel>
                 </Accordion>
             </Section>

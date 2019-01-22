@@ -9,6 +9,8 @@ import Form from 'grommet/components/Form';
 import FormFields from 'grommet/components/FormFields';
 import FormField from 'grommet/components/FormField';
 import TextInput from 'grommet/components/TextInput';
+import Accordion from 'grommet/components/Accordion';
+import AccordionPanel from 'grommet/components/AccordionPanel';
 
 import CheckboxUi from 'xtraplatform-manager/src/components/common/CheckboxUi';
 
@@ -38,25 +40,24 @@ export default class ServiceEditWfsSettings extends Component {
 
         return (
             <Section pad={ { vertical: 'medium' } } full="horizontal">
-                <Box pad={ { horizontal: 'medium' } } separator="bottom">
-                    <Heading tag="h2">
-                        Source WFS
-                    </Heading>
-                </Box>
-                <Form compact={ false } pad={ { horizontal: 'medium', vertical: 'small' } }>
-                    <FormFields>
-                        <fieldset>
-                            <FormField label={ "Reversed axis order for default CRS" + (ui.code ? ` (EPSG:${ui.code})` : "") }>
-                                <CheckboxUi name="forceLongitudeFirst"
-                                    checked={ ui.forceLongitudeFirst }
-                                    toggle={ false }
-                                    reverse={ false }
-                                    onChange={ updateUI }
-                                    onDebounce={ this._save } />
-                            </FormField>
-                        </fieldset>
-                    </FormFields>
-                </Form>
+                <Accordion animate={true} multiple={true}>
+                    <AccordionPanel heading="Source WFS">
+                        <Form compact={ false } pad={ { horizontal: 'medium', vertical: 'small' } }>
+                            <FormFields>
+                                <fieldset>
+                                    <FormField label={ "Reversed axis order for default CRS" + (ui.code ? ` (EPSG:${ui.code})` : "") }>
+                                        <CheckboxUi name="forceLongitudeFirst"
+                                            checked={ ui.forceLongitudeFirst }
+                                            toggle={ false }
+                                            reverse={ false }
+                                            onChange={ updateUI }
+                                            onDebounce={ this._save } />
+                                    </FormField>
+                                </fieldset>
+                            </FormFields>
+                        </Form>
+                    </AccordionPanel>
+                </Accordion>
             </Section>
         );
     }

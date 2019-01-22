@@ -30,6 +30,8 @@ import Box from 'grommet/components/Box';
 import List from 'grommet/components/List';
 import ListItem from 'grommet/components/ListItem';
 import ListPlaceholder from 'grommet-addons/components/ListPlaceholder';
+import Accordion from 'grommet/components/Accordion';
+import AccordionPanel from 'grommet/components/AccordionPanel';
 
 import ServiceShow from 'xtraplatform-manager/src/components/container/ServiceShow'
 import ServiceEditWfsSettings from '../presentational/ServiceEditWfsSettings'
@@ -91,16 +93,15 @@ export default class ServiceShowWfsProxy extends Component {
                                               </ListItem>)
         return (
             <Section pad={ { vertical: 'medium' } } full="horizontal">
-                <Box pad={ { horizontal: 'medium' } }>
-                    <Heading tag="h2">
-                        Feature Types
-                    </Heading>
-                </Box>
-                <List>
-                    { fts.length <= 0 ?
-                      <ListPlaceholder /> :
-                      fts }
-                </List>
+                <Accordion animate={true} multiple={true}>
+                    <AccordionPanel heading="Feature Types">
+                        <List>
+                            { fts.length <= 0 ?
+                            <ListPlaceholder /> :
+                            fts }
+                        </List>
+                    </AccordionPanel>
+                </Accordion>
             </Section>
         );
     }
