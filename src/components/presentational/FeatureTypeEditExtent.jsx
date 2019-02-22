@@ -67,7 +67,7 @@ const validateTemporalBoundary = (isStart) => (value, ui) => {
 export default class FeatureTypeEditGeneral extends Component {
 
     _save = () => {
-        const {ui, validator, onChange} = this.props;
+        const { ui, validator, onChange } = this.props;
         if (validator.valid) {
             onChange({
                 extent: {
@@ -81,42 +81,38 @@ export default class FeatureTypeEditGeneral extends Component {
     }
 
     render() {
-        const {featureType, ui, updateUI, onChange, validator} = this.props;
+        const { featureType, ui, updateUI, onChange, validator } = this.props;
 
         return (
-            featureType && <Section pad={ { vertical: 'medium' } } full="horizontal">
-                                <Accordion animate={true} multiple={true}>
-                                    <AccordionPanel heading="Extent">
-                                        <Box pad={ { horizontal: 'medium ',vertical:"small"}  }>
-                                            <Heading tag="h4">
-                                                Temporal
+            <Section pad={{ vertical: 'medium' }} full="horizontal">
+                <Box pad={{ horizontal: 'medium ', vertical: "small" }}>
+                    <Heading tag="h4">
+                        Temporal
                                             </Heading>
-                                        </Box>
-                                        <Form compact={ false } pad={ { horizontal: 'medium', vertical: 'small' } }>
-                                            <FormFields>
-                                                <fieldset>
-                                                    <FormField label="Start of temporal extent" error={ validator.messages.start }>
-                                                        <TextInputUi name="start"
-                                                            value={ ui.start }
-                                                            onChange={ updateUI }
-                                                            onDebounce={ this._save } />
-                                                    </FormField>
-                                                    <FormField label="End of temporal extent" error={ validator.messages.end }>
-                                                        <TextInputUi name="end"
-                                                            placeHolder="now"
-                                                            value={ ui.end }
-                                                            onChange={ updateUI }
-                                                            onDebounce={ this._save } />
-                                                            
-                                                    </FormField>
-                                                </fieldset>
-                                            </FormFields>
-                                        </Form>
-                                        <FeatureTypeEditBBox featureType={featureType} onChange={this.props.onChange} />
-                                    </AccordionPanel>
-                                </Accordion>
-                           </Section>
-                           
+                </Box>
+                <Form compact={false} pad={{ horizontal: 'medium', vertical: 'small' }}>
+                    <FormFields>
+                        <fieldset>
+                            <FormField label="Start of temporal extent" error={validator.messages.start}>
+                                <TextInputUi name="start"
+                                    value={ui.start}
+                                    onChange={updateUI}
+                                    onDebounce={this._save} />
+                            </FormField>
+                            <FormField label="End of temporal extent" error={validator.messages.end}>
+                                <TextInputUi name="end"
+                                    placeHolder="now"
+                                    value={ui.end}
+                                    onChange={updateUI}
+                                    onDebounce={this._save} />
+
+                            </FormField>
+                        </fieldset>
+                    </FormFields>
+                </Form>
+                <FeatureTypeEditBBox featureType={featureType} onChange={this.props.onChange} />
+            </Section >
+
         );
     }
 }

@@ -42,12 +42,12 @@ import CheckboxUi from 'xtraplatform-manager/src/components/common/CheckboxUi';
     //key: 'FeatureTypeEditGeneral',
     state: {
         label: (props) => props.featureType.label || '',
-        extensions: (props) => typeof    props.service.extensions === "undefined" ? null : props.service.extensions,
-        enabled: (props) => typeof    props.featureType.extensions=== "undefined" ? null 
-                          : typeof props.featureType.extensions.tilesExtension ==="undefined" ? null 
-                          : typeof props.featureType.extensions.tilesExtension.enabled === "undefined" ? null 
-                          : props.featureType.extensions.tilesExtension.enabled === null ? false 
-                          : props.featureType.extensions.tilesExtension.enabled 
+        extensions: (props) => typeof props.service.extensions === "undefined" ? null : props.service.extensions,
+        enabled: (props) => typeof props.featureType.extensions === "undefined" ? null
+            : typeof props.featureType.extensions.tilesExtension === "undefined" ? null
+                : typeof props.featureType.extensions.tilesExtension.enabled === "undefined" ? null
+                    : props.featureType.extensions.tilesExtension.enabled === null ? false
+                        : props.featureType.extensions.tilesExtension.enabled
 
 
 
@@ -58,74 +58,66 @@ import CheckboxUi from 'xtraplatform-manager/src/components/common/CheckboxUi';
 export default class FeatureTypeEditGeneral extends Component {
 
     _save = () => {
-        const {ui, onChange} = this.props;
+        const { ui, onChange } = this.props;
         ui.enabled = !ui.enabled
         onChange(ui);
     }
- 
+
 
     render() {
-        const {featureType, ui, updateUI, onChange} = this.props;
+        const { featureType, ui, updateUI, onChange } = this.props;
 
-        if(ui.extensions){
-            var numberOfExtensions=Object.keys(ui.extensions).length
-            for(var i=0; i < numberOfExtensions; i++){
-                if(Object.keys(ui.extensions)[i] ==="tilesExtension"){
+        if (ui.extensions) {
+            var numberOfExtensions = Object.keys(ui.extensions).length
+            for (var i = 0; i < numberOfExtensions; i++) {
+                if (Object.keys(ui.extensions)[i] === "tilesExtension") {
 
-                    var displayTilesEnabled=[];
+                    var displayTilesEnabled = [];
 
                     var extensionType = Object.values(ui.extensions)[i].extensionType
                     var extensionName = Object.keys(ui.extensions)[i]
 
-                    
+
                     displayTilesEnabled.push(
-                        <Box pad={ {horizontal:'medium', vertical:'medium'} }>
+                        <Box pad={{ horizontal: 'medium', vertical: 'medium' }}>
                             <CheckboxUi name={"enabled"}
-                                        label={extensionType}
-                                        checked={ui.enabled}
-                                        onChange={(field, value) =>  updateUI("extensions", 
-                                            { 
-                                                [extensionName]: {
-                                                    ...ui.extensions[extensionName], 
-                                                    [field]:value
-                                                }
-                                            }
-                                        )} 
-                                        //(field, value) =>  updateUI('setting', {...ui.setting, [field]: value})
-                                        onDebounce={this._save }/>  
+                                label={extensionType}
+                                checked={ui.enabled}
+                                onChange={(field, value) => updateUI("extensions",
+                                    {
+                                        [extensionName]: {
+                                            ...ui.extensions[extensionName],
+                                            [field]: value
+                                        }
+                                    }
+                                )}
+                                //(field, value) =>  updateUI('setting', {...ui.setting, [field]: value})
+                                onDebounce={this._save} />
                         </Box>
-                        )
+                    )
                 }
             }
         }
         return (
-        
-            
-            featureType && 
+            <Section pad={{ vertical: 'medium' }} full="horizontal">
+                <Form compact={false} pad={{ horizontal: 'medium', vertical: 'small' }}>
+                    <FormFields>
+                        <fieldset>
+                            <FormField label="Id">
+                                <TextInput name="name" value={featureType.origId} disabled={true} />
+                            </FormField>
+                            <FormField label="Display name">
+                                <TextInputUi name="label"
+                                    value={ui.label}
+                                    onChange={updateUI}
+                                    onDebounce={this._save} />
+                            </FormField>
+                        </fieldset>
+                    </FormFields>
+                </Form>
+                {displayTilesEnabled}
+            </Section >
 
-            <Section pad={ { vertical: 'medium' } } full="horizontal">
-                <Accordion animate={true} multiple={true} active={0}>
-                    <AccordionPanel heading="General">            
-                        <Form compact={ false } pad={ { horizontal: 'medium', vertical: 'small' } }>
-                            <FormFields>
-                                <fieldset>
-                                    <FormField label="Id">
-                                        <TextInput name="name" value={ featureType.origId } disabled={ true } />
-                                    </FormField>
-                                    <FormField label="Display name">
-                                        <TextInputUi name="label"
-                                            value={ ui.label }
-                                            onChange={ updateUI }
-                                            onDebounce={ this._save } />
-                                    </FormField>
-                                </fieldset>
-                            </FormFields>
-                        </Form>
-                        {displayTilesEnabled}
-                    </AccordionPanel>
-                </Accordion>
-            </Section>
-  
         );
     }
 }

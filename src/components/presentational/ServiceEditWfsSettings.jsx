@@ -23,7 +23,7 @@ import CheckboxUi from 'xtraplatform-manager/src/components/common/CheckboxUi';
 export default class ServiceEditWfsSettings extends Component {
 
     _save = () => {
-        const {ui, validator, onChange} = this.props;
+        const { ui, validator, onChange } = this.props;
 
         //if (validator.valid) {
         onChange({
@@ -32,32 +32,28 @@ export default class ServiceEditWfsSettings extends Component {
                 nativeCrs: ui
             }
         });
-    //}
+        //}
     }
 
     render() {
-        const {ui, updateUI} = this.props;
+        const { ui, updateUI } = this.props;
 
         return (
-            <Section pad={ { vertical: 'medium' } } full="horizontal">
-                <Accordion animate={true} multiple={true}>
-                    <AccordionPanel heading="Source WFS">
-                        <Form compact={ false } pad={ { horizontal: 'medium', vertical: 'small' } }>
-                            <FormFields>
-                                <fieldset>
-                                    <FormField label={ "Reversed axis order for default CRS" + (ui.code ? ` (EPSG:${ui.code})` : "") }>
-                                        <CheckboxUi name="forceLongitudeFirst"
-                                            checked={ ui.forceLongitudeFirst }
-                                            toggle={ false }
-                                            reverse={ false }
-                                            onChange={ updateUI }
-                                            onDebounce={ this._save } />
-                                    </FormField>
-                                </fieldset>
-                            </FormFields>
-                        </Form>
-                    </AccordionPanel>
-                </Accordion>
+            <Section pad={{ vertical: 'medium' }} full="horizontal">
+                <Form compact={false} pad={{ horizontal: 'medium', vertical: 'small' }}>
+                    <FormFields>
+                        <fieldset>
+                            <FormField label={"Reversed axis order for default CRS" + (ui.code ? ` (EPSG:${ui.code})` : "")}>
+                                <CheckboxUi name="forceLongitudeFirst"
+                                    checked={ui.forceLongitudeFirst}
+                                    toggle={false}
+                                    reverse={false}
+                                    onChange={updateUI}
+                                    onDebounce={this._save} />
+                            </FormField>
+                        </fieldset>
+                    </FormFields>
+                </Form>
             </Section>
         );
     }

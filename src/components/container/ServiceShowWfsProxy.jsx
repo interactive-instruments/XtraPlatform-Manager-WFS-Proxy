@@ -74,7 +74,7 @@ import ServiceApi from 'xtraplatform-manager/src/apis/ServiceApi'
 export default class ServiceShowWfsProxy extends Component {
 
     _onChange = (change) => {
-        const {service, updateService} = this.props;
+        const { service, updateService } = this.props;
 
         updateService({
             ...change,
@@ -83,32 +83,28 @@ export default class ServiceShowWfsProxy extends Component {
     }
 
     _renderFeatureTypes() {
-        const {featureTypes} = this.props;
+        const { featureTypes } = this.props;
 
         let fts = []
 
         if (featureTypes)
-            fts = featureTypes.map((ft, i) => <ListItem key={ ft.id } separator={ i === 0 ? 'horizontal' : 'bottom' } onClick={ this._select(ft.id) }>
-                                                  { ft.label }
-                                              </ListItem>)
+            fts = featureTypes.map((ft, i) => <ListItem key={ft.id} separator={i === 0 ? 'horizontal' : 'bottom'} onClick={this._select(ft.id)}>
+                {ft.label}
+            </ListItem>)
         return (
-            <Section pad={ { vertical: 'medium' } } full="horizontal">
-                <Accordion animate={true} multiple={true}>
-                    <AccordionPanel heading="Feature Types">
-                        <List>
-                            { fts.length <= 0 ?
-                            <ListPlaceholder /> :
-                            fts }
-                        </List>
-                    </AccordionPanel>
-                </Accordion>
+            <Section pad={{ vertical: 'medium' }} full="horizontal">
+                <List>
+                    {fts.length <= 0 ?
+                        <ListPlaceholder /> :
+                        fts}
+                </List>
             </Section>
         );
     }
 
     // TODO
     _select = (fid) => {
-        const {service, dispatch} = this.props;
+        const { service, dispatch } = this.props;
         return () => {
             var sid = service.id;
             console.log('selected: ', sid, fid);
@@ -122,13 +118,17 @@ export default class ServiceShowWfsProxy extends Component {
 
     render() {
         //console.log('CONNECTED', this.props)
-        const {service} = this.props;
+        const { service } = this.props;
         const featureTypes = this._renderFeatureTypes();
 
         return (
             <ServiceShow {...this.props}>
-                { service && <ServiceEditWfsSettings service={ service } onChange={ this._onChange } /> }
-                { featureTypes }
+                <AccordionPanel heading="Data Source">
+                    <ServiceEditWfsSettings service={service} onChange={this._onChange} />
+                </AccordionPanel>
+                <AccordionPanel heading="Feature Types">
+                    {featureTypes}
+                </AccordionPanel>
             </ServiceShow>
         );
     }

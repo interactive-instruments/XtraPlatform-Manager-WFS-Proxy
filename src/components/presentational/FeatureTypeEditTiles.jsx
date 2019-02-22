@@ -23,47 +23,47 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ui from 'redux-ui';
 
-import EditTiles from 'xtraplatform-manager/src/components/presentational/EditTiles'
+//import EditTiles from 'xtraplatform-manager/src/components/presentational/EditTiles'
 
 
 @ui({
     state: {
-        extensions:(props) => typeof props.featureType.extensions === "undefined" ? null : props.featureType.extensions,
-        tiles:(props) => typeof props.featureType.extensions.tilesExtension ==="undefined" ? null : props.featureType.extensions.tilesExtension,
+        extensions: (props) => typeof props.featureType.extensions === "undefined" ? null : props.featureType.extensions,
+        tiles: (props) => typeof props.featureType.extensions.tilesExtension === "undefined" ? null : props.featureType.extensions.tilesExtension,
         formats: () => [],
-        formatJsonArray: (props) => typeof props.featureType.extensions.tilesExtension === "undefined" ? true : typeof props.featureType.extensions.tilesExtension.formats ==="undefined" ? true : 
-        Object.entries(
-            props.featureType.extensions.tilesExtension.formats).map(([key,value])=>{
-                if(value.toString()==="application/json"){
-                    return new Map ([[value, true]]);
+        formatJsonArray: (props) => typeof props.featureType.extensions.tilesExtension === "undefined" ? true : typeof props.featureType.extensions.tilesExtension.formats === "undefined" ? true :
+            Object.entries(
+                props.featureType.extensions.tilesExtension.formats).map(([key, value]) => {
+                    if (value.toString() === "application/json") {
+                        return new Map([[value, true]]);
+                    }
+                    else {
+                        return new Map([[value, false]])
+                    }
                 }
-                else{
-                    return new Map ([[value, false]])
-                }
-            } 
-        ),
+                ),
         formatJsonEnabled: () => null,
-        formatMvtArray: (props) => typeof props.featureType.extensions.tilesExtension === "undefined" ? true : typeof props.featureType.extensions.tilesExtension.formats ==="undefined" ? true : 
-        Object.entries(
-            props.featureType.extensions.tilesExtension.formats).map(([key,value])=>{
-                if(value.toString()==="application/vnd.mapbox-vector-tile"){
-                    return new Map ([[value, true]])
+        formatMvtArray: (props) => typeof props.featureType.extensions.tilesExtension === "undefined" ? true : typeof props.featureType.extensions.tilesExtension.formats === "undefined" ? true :
+            Object.entries(
+                props.featureType.extensions.tilesExtension.formats).map(([key, value]) => {
+                    if (value.toString() === "application/vnd.mapbox-vector-tile") {
+                        return new Map([[value, true]])
+                    }
+                    else {
+                        return new Map([[value, false]])
+                    }
                 }
-                else{
-                    return new Map ([[value, false]])
-                }
-            }
-        ),
-        formatMvtEnabled:()=>null,
+                ),
+        formatMvtEnabled: () => null,
 
-        maxZoomLevel:(props) => typeof props.featureType.extensions.tilesExtension === "undefined" ? 22 : typeof props.featureType.extensions.tilesExtension.zoomLevels === "undefined" ? 22 :
-        props.featureType.extensions.tilesExtension.zoomLevels.default.max,
-        minZoomLevel:(props) => typeof props.featureType.extensions.tilesExtension === "undefined" ? 0 : typeof props.featureType.extensions.tilesExtension.zoomLevels === "undefined" ? 0 :
-         props.featureType.extensions.tilesExtension.zoomLevels.default.min,
-        maxSeeding:(props) => typeof props.featureType.extensions.tilesExtension === "undefined" ? "" :  typeof props.featureType.extensions.tilesExtension.seeding === "undefined" ? "" : 
-        props.featureType.extensions.tilesExtension.seeding.default.max,
-        minSeeding:(props) => typeof props.featureType.extensions.tilesExtension === "undefined" ? "" :  typeof props.featureType.extensions.tilesExtension.seeding === "undefined" ? "" :
-        props.featureType.extensions.tilesExtension.seeding.default.min
+        maxZoomLevel: (props) => typeof props.featureType.extensions.tilesExtension === "undefined" ? 22 : typeof props.featureType.extensions.tilesExtension.zoomLevels === "undefined" ? 22 :
+            props.featureType.extensions.tilesExtension.zoomLevels.default.max,
+        minZoomLevel: (props) => typeof props.featureType.extensions.tilesExtension === "undefined" ? 0 : typeof props.featureType.extensions.tilesExtension.zoomLevels === "undefined" ? 0 :
+            props.featureType.extensions.tilesExtension.zoomLevels.default.min,
+        maxSeeding: (props) => typeof props.featureType.extensions.tilesExtension === "undefined" ? "" : typeof props.featureType.extensions.tilesExtension.seeding === "undefined" ? "" :
+            props.featureType.extensions.tilesExtension.seeding.default.max,
+        minSeeding: (props) => typeof props.featureType.extensions.tilesExtension === "undefined" ? "" : typeof props.featureType.extensions.tilesExtension.seeding === "undefined" ? "" :
+            props.featureType.extensions.tilesExtension.seeding.default.min
     }
 })
 
@@ -73,16 +73,16 @@ import EditTiles from 'xtraplatform-manager/src/components/presentational/EditTi
 export default class FeatureTypeEditTiles extends Component {
 
 
-    render(){
-        const {featureType, ui, updateUI,onChange} = this.props;
+    render() {
+        const { featureType, ui, updateUI, onChange } = this.props;
 
-        return(
+        return (
             featureType
             &&
-            <EditTiles onChange={onChange} ui={ui} updateUI={updateUI} tilesEnabled={typeof this.props.featureType.extensions.tilesExtension === "undefined"  ? false : this.props.featureType.extensions.tilesExtension.enabled}/>
+            {/*<EditTiles onChange={onChange} ui={ui} updateUI={updateUI} tilesEnabled={typeof this.props.featureType.extensions.tilesExtension === "undefined"  ? false : this.props.featureType.extensions.tilesExtension.enabled}/>*/ }
         );
     }
-    
+
 }
 
 FeatureTypeEditTiles.propTypes = {

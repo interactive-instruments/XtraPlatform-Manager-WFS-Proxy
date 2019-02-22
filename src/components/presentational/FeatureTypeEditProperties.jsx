@@ -35,9 +35,9 @@ import AccordionPanel from 'grommet/components/AccordionPanel';
 import GrommetTreeList from 'xtraplatform-manager/src/components/common/GrommetTreeList';
 
 class FeatureTypeEditProperties extends Component {
-    
+
     render() {
-        const {tree, selected, expanded, mappingStatus, onExpand, onSelect, onActivate,updateUI,ui} = this.props;
+        const { tree, selected, expanded, mappingStatus, onExpand, onSelect, onActivate, updateUI, ui } = this.props;
 
 
         const showButton = mappingStatus && !mappingStatus.enabled;
@@ -46,35 +46,31 @@ class FeatureTypeEditProperties extends Component {
         const showMapping = true; //mappingStatus && mappingStatus.enabled && mappingStatus.supported && !mappingStatus.loading;
 
         return (
-            <Section pad={ { vertical: 'medium' } } full="horizontal">
-                <Accordion animate={true} multiple={true}>
-                    <AccordionPanel heading="Mapping">
-                        { showButton && <Box pad={ { horizontal: 'medium', vertical: 'small' } }>
-                                            <Button label='Enable' secondary={ true } onClick={ onActivate } />
-                                        </Box> }
-                        { showError && <Box pad={ { horizontal: 'medium', vertical: 'small' } }>
-                                        <Title>
-                                            There is an issue with the service:
+            <Section pad={{ vertical: 'medium' }} full="horizontal">
+                {showButton && <Box pad={{ horizontal: 'medium', vertical: 'small' }}>
+                    <Button label='Enable' secondary={true} onClick={onActivate} />
+                </Box>}
+                {showError && <Box pad={{ horizontal: 'medium', vertical: 'small' }}>
+                    <Title>
+                        There is an issue with the service:
                                         </Title>
-                                        <Paragraph>
-                                            { mappingStatus.errorMessage }
-                                        </Paragraph>
-                                        { mappingStatus.errorMessageDetails
-                                            && mappingStatus.errorMessageDetails.map((detail, i) => <Paragraph key={ i } margin='none'>
-                                                                                                        { detail }
-                                                                                                    </Paragraph>) }
-                                    </Box> }
-                        { showLoading && <Box pad={ { horizontal: 'medium', vertical: 'small' } }>
-                                            <Button label='Loading...' secondary={ true } />
-                                        </Box> }
-                        { showMapping && <GrommetTreeList tree={ tree }
-                                            expanded={ false }
-                                            selected={ false }
-                                            onExpand={ onExpand }
-                                            onSelect={ onSelect } /> }
-                    </AccordionPanel>
-                </Accordion>
-            </Section>
+                    <Paragraph>
+                        {mappingStatus.errorMessage}
+                    </Paragraph>
+                    {mappingStatus.errorMessageDetails
+                        && mappingStatus.errorMessageDetails.map((detail, i) => <Paragraph key={i} margin='none'>
+                            {detail}
+                        </Paragraph>)}
+                </Box>}
+                {showLoading && <Box pad={{ horizontal: 'medium', vertical: 'small' }}>
+                    <Button label='Loading...' secondary={true} />
+                </Box>}
+                {showMapping && <GrommetTreeList tree={tree}
+                    expanded={expanded}
+                    selected={selected}
+                    onExpand={onExpand}
+                    onSelect={onSelect} />}
+            </Section >
         );
     }
 }
