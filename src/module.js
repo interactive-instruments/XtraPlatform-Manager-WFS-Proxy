@@ -7,10 +7,11 @@
  */
 
 import ServiceAddWfsProxy from './components/container/ServiceAddWfsProxy'
-import ServiceShowWfsProxy from './components/container/ServiceShowWfsProxy'
-import FeatureTypeShow from './components/container/FeatureTypeShow'
+import FeatureTypes from './components/container/FeatureTypes'
 import ServiceAddCatalog from './components/container/ServiceAddCatalog'
 import MappingEdit from './components/presentational/MappingEdit'
+import ServiceEditWfsSettings from './components/presentational/ServiceEditWfsSettings';
+import ServiceEditGsfs from './components/presentational/ServiceEditGsfs';
 
 export default {
     serviceTypes: ['WFS3'],
@@ -27,7 +28,7 @@ export default {
                     {},
                     {
                         path: '/:id/:ftid',
-                        component: FeatureTypeShow
+                        component: FeatureTypes
                     },
                     {},
                     {}
@@ -39,11 +40,18 @@ export default {
         ServiceAdd: {
             WFS3: ServiceAddWfsProxy
         },
-        ServiceShow: {
+        /*ServiceShow: {
             WFS3: ServiceShowWfsProxy
-        },
+        },*/
         MappingEdit: {
             base: MappingEdit
+        }
+    },
+    extendableComponents: {
+        ServiceEdit: {
+            'Data Provider': ServiceEditWfsSettings,
+            'Feature Types': FeatureTypes,
+            'FeatureServer': ServiceEditGsfs
         }
     },
     serviceMenu: [{

@@ -25,45 +25,40 @@ import ui from 'redux-ui';
 
 import EditTiles from 'xtraplatform-manager/src/components/presentational/EditTiles'
 
+const tilesExt = props => props.featureType.capabilities.find(ext => ext.extensionType === 'TILES')
 
 @ui({
     state: {
-        extensions:(props) => typeof props.featureType.extensions === "undefined" ? null : props.featureType.extensions,
-        tiles:(props) => typeof props.featureType.extensions.tilesExtension ==="undefined" ? null : props.featureType.extensions.tilesExtension,
+        extensions: (props) => props.featureType.capabilities ? props.featureType.capabilities : null,
+        tiles: (props) => tilesExt(props) || null,
         formats: () => [],
-        formatJsonArray: (props) => typeof props.featureType.extensions.tilesExtension === "undefined" ? true : typeof props.featureType.extensions.tilesExtension.formats ==="undefined" ? true : 
-        Object.entries(
-            props.featureType.extensions.tilesExtension.formats).map(([key,value])=>{
-                if(value.toString()==="application/json"){
-                    return new Map ([[value, true]]);
+        formatJsonArray: (props) => tilesExt(props) && tilesExt(props).formats ?
+            Object.entries(tilesExt(props).formats).map(([key, value]) => {
+                if (value.toString() === "application/json") {
+                    return new Map([[value, true]]);
                 }
-                else{
-                    return new Map ([[value, false]])
-                }
-            } 
-        ),
-        formatJsonEnabled: () => null,
-        formatMvtArray: (props) => typeof props.featureType.extensions.tilesExtension === "undefined" ? true : typeof props.featureType.extensions.tilesExtension.formats ==="undefined" ? true : 
-        Object.entries(
-            props.featureType.extensions.tilesExtension.formats).map(([key,value])=>{
-                if(value.toString()==="application/vnd.mapbox-vector-tile"){
-                    return new Map ([[value, true]])
-                }
-                else{
-                    return new Map ([[value, false]])
+                else {
+                    return new Map([[value, false]])
                 }
             }
-        ),
-        formatMvtEnabled:()=>null,
+            ) : true,
+        formatJsonEnabled: () => null,
+        formatMvtArray: (props) => tilesExt(props) && tilesExt(props).formats ?
+            Object.entries(tilesExt(props).formats).map(([key, value]) => {
+                if (value.toString() === "application/vnd.mapbox-vector-tile") {
+                    return new Map([[value, true]])
+                }
+                else {
+                    return new Map([[value, false]])
+                }
+            }
+            ) : true,
+        formatMvtEnabled: () => null,
 
-        maxZoomLevel:(props) => typeof props.featureType.extensions.tilesExtension === "undefined" ? 22 : typeof props.featureType.extensions.tilesExtension.zoomLevels === "undefined" ? 22 :
-        props.featureType.extensions.tilesExtension.zoomLevels.default.max,
-        minZoomLevel:(props) => typeof props.featureType.extensions.tilesExtension === "undefined" ? 0 : typeof props.featureType.extensions.tilesExtension.zoomLevels === "undefined" ? 0 :
-         props.featureType.extensions.tilesExtension.zoomLevels.default.min,
-        maxSeeding:(props) => typeof props.featureType.extensions.tilesExtension === "undefined" ? "" :  typeof props.featureType.extensions.tilesExtension.seeding === "undefined" ? "" : 
-        props.featureType.extensions.tilesExtension.seeding.default.max,
-        minSeeding:(props) => typeof props.featureType.extensions.tilesExtension === "undefined" ? "" :  typeof props.featureType.extensions.tilesExtension.seeding === "undefined" ? "" :
-        props.featureType.extensions.tilesExtension.seeding.default.min
+        maxZoomLevel: (props) => tilesExt(props) && tilesExt(props).zoomLevels ? tilesExt(props).zoomLevels.default.max : 22,
+        minZoomLevel: (props) => tilesExt(props) && tilesExt(props).zoomLevels ? tilesExt(props).zoomLevels.default.min : 0,
+        maxSeeding: (props) => tilesExt(props) && tilesExt(props).seeding ? tilesExt(props).seeding.default.max : 0,
+        minSeeding: (props) => tilesExt(props) && tilesExt(props).seeding ? tilesExt(props).seeding.default.min : 0,
     }
 })
 
@@ -73,16 +68,16 @@ import EditTiles from 'xtraplatform-manager/src/components/presentational/EditTi
 export default class FeatureTypeEditTiles extends Component {
 
 
-    render(){
-        const {featureType, ui, updateUI,onChange} = this.props;
+    render() {
+        const { featureType, ui, updateUI, onChange } = this.props;
 
-        return(
+        return (
             featureType
             &&
-            <EditTiles onChange={onChange} ui={ui} updateUI={updateUI} tilesEnabled={typeof this.props.featureType.extensions.tilesExtension === "undefined"  ? false : this.props.featureType.extensions.tilesExtension.enabled}/>
+            <EditTiles onChange={onChange} ui={ui} updateUI={updateUI} tilesEnabled={ui.tiles && ui.tiles.enabled} />
         );
     }
-    
+
 }
 
 FeatureTypeEditTiles.propTypes = {

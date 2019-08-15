@@ -3,16 +3,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
-import classnames from 'classnames';
-import Button from 'grommet/components/Button';
-import Notification from 'grommet/components/Notification';
-import Status from 'grommet/components/icons/Status';
-import CloseIcon from 'grommet/components/icons/base/Close';
-import CSSClassnames from 'grommet/utils/CSSClassnames';
-import { announce } from 'grommet/utils/Announcer';
+//import classnames from 'classnames';
 
-const CLASS_ROOT = CSSClassnames.TOAST;
-const APP = CSSClassnames.APP;
+import Notification from 'xtraplatform-manager/src/components/common/Notification';
+
+const CLASS_ROOT = 'grommetux-toast';//CSSClassnames.TOAST;
+const APP = 'app';//CSSClassnames.APP;
 
 const DURATION = 8000;
 const ANIMATION_DURATION = 1000;
@@ -45,7 +41,7 @@ class ToastContents extends Component {
     }
 
     _onClose() {
-        const {onClose} = this.props;
+        const { onClose } = this.props;
         clearTimeout(this._timer);
         this._timer = undefined;
         this.setState({
@@ -58,21 +54,21 @@ class ToastContents extends Component {
     }
 
     render() {
-        const {children, onClose, size, status, duration, ...rest} = this.props;
-        const {closing} = this.state;
+        const { children, onClose, size, status, duration, ...rest } = this.props;
+        const { closing } = this.state;
 
-        // removing context props to avoid invalid html attributes on prop transfer
+        // removing bundleContext props to avoid invalid html attributes on prop transfer
         delete rest.history;
         delete rest.intl;
         delete rest.router;
         delete rest.store;
 
-        const classNames = classnames(
+        const classNames = '';/*classnames(
             CLASS_ROOT, {
                 [`${CLASS_ROOT}--${size}`]: size,
                 [`${CLASS_ROOT}--closing`]: closing
             }
-        );
+        );*/
 
         /*let statusIcon;
         if (status) {
@@ -90,13 +86,13 @@ class ToastContents extends Component {
         }*/
 
         return (
-            <div className={ classNames } {...rest}>
+            <div className={classNames} {...rest}>
                 { /* statusIcon }
                                                                                                                                                                                                                                                                                                                                                                                                                 <div ref={ (ref) => this._contentsRef = ref } className={ `${CLASS_ROOT}__contents` }>
                                                                                                                                                                                                                                                                                                                                                                                                                     { children }
                                                                                                                                                                                                                                                                                                                                                                                                                 </div>
                                                                                                                                                                                                                                                                                                                                                                                                                 { closeControl */ }
-                <Notification message={ children } status={ status } style={ { color: 'white', width: '100%', backgroundColor: 'rgba(140, 200, 0, 0.9)' } } />
+                <Notification message={children} status={status} style={{ color: 'white', width: '100%', backgroundColor: 'rgba(140, 200, 0, 0.9)' }} />
             </div>
         );
     }
@@ -111,11 +107,11 @@ ToastContents.propTypes = {
     store: PropTypes.any
 };
 
-// Because Toast creates a new DOM render context, the context
+// Because Toast creates a new DOM render bundleContext, the bundleContext
 // is not transfered. For now, we hard code these specific ones.
-// TODO: Either figure out how to introspect the context and transfer
+// TODO: Either figure out how to introspect the bundleContext and transfer
 // whatever we find or have callers explicitly indicate which parts
-// of the context to transfer somehow.
+// of the bundleContext to transfer somehow.
 ToastContents.childContextTypes = {
     history: PropTypes.object,
     intl: PropTypes.object,
@@ -139,7 +135,7 @@ export default class Toast extends Component {
     }
 
     _addLayer() {
-        const {id} = this.props;
+        const { id } = this.props;
 
         const element = document.createElement('div');
         if (id) {
@@ -163,19 +159,19 @@ export default class Toast extends Component {
         if (this._element) {
             this._element.className = `${CLASS_ROOT}__container`;
             const contents = (
-            <ToastContents {...this.props}
-                history={ this.context.history }
-                intl={ this.context.intl }
-                router={ this.context.router }
-                store={ this.context.store }
-                onClose={ () => this._removeLayer() } />
+                <ToastContents {...this.props}
+                    history={this.bundleContext.history}
+                    intl={this.bundleContext.intl}
+                    router={this.bundleContext.router}
+                    store={this.bundleContext.store}
+                    onClose={() => this._removeLayer()} />
             );
             ReactDOM.render(contents, this._element);
         }
     }
 
     _removeLayer() {
-        const {onClose} = this.props;
+        const { onClose } = this.props;
         if (this._element) {
             ReactDOM.unmountComponentAtNode(this._element);
             this._element.parentNode.removeChild(this._element);
@@ -188,7 +184,7 @@ export default class Toast extends Component {
     }
 
     render() {
-        return (<span style={ { display: 'none' } } />);
+        return (<span style={{ display: 'none' }} />);
     }
 }
 

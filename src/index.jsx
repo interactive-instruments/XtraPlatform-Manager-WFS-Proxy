@@ -24,7 +24,7 @@ import merge from 'deepmerge'
 import { app, render } from 'xtraplatform-manager/src/module'
 import mdl from './module'
 
-import 'xtraplatform-manager/src/scss/default'
+//import 'xtraplatform-manager/src/scss/default'
 
 const cfg = merge(app, mdl)
 

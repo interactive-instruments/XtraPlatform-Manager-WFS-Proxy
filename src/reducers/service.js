@@ -32,7 +32,7 @@ export const getFeatureType = (state) => {
     const service = getService(state);
     if (service && state.entities.featureTypes) {
         for (var key in state.entities.featureTypes) {
-            if (state.entities.featureTypes[key].id === getSelectedFeatureType(state)) {
+            if (state.entities.featureTypes[key].origId === getSelectedFeatureType(state)) {
                 return state.entities.featureTypes[key];
             }
         }

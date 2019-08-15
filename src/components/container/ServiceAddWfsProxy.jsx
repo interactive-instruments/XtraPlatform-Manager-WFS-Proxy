@@ -22,8 +22,7 @@
 import React, { Component } from 'react';
 import ui from 'redux-ui';
 
-import FormField from 'grommet/components/FormField';
-import Header from 'grommet/components/Header';
+import { FormField, Box } from 'grommet';
 
 import TextInputUi from 'xtraplatform-manager/src/components/common/TextInputUi';
 import PasswordInputUi from 'xtraplatform-manager/src/components/common/PasswordInputUi';
@@ -37,8 +36,8 @@ import uiValidator, { url } from 'xtraplatform-manager/src/components/common/ui-
         url: '',
         serviceType: 'WFS3',
         isBasicAuth: false,
-        user: '',
-        password: ''
+        baUser: '',
+        baPassword: ''
     }
 })
 
@@ -49,35 +48,37 @@ import uiValidator, { url } from 'xtraplatform-manager/src/components/common/ui-
 export default class ServiceAddWfsProxy extends Component {
 
     render() {
-        const {ui, updateUI, ...rest} = this.props;
-        const {validator} = this.props;
+        const { ui, updateUI, ...rest } = this.props;
+        const { validator } = this.props;
 
         return (
             <ServiceAdd {...rest}>
                 <FormField label="WFS URL"
-                    error={ validator.messages.url }
+                    error={validator.messages.url}
                     help="The GetCapabilities endpoint of the existing service"
-                    style={ { width: '100%' } }>
-                    <TextInputUi name="url" value={ ui.url } onChange={ updateUI } />
+                    style={{ width: '100%' }}>
+                    <TextInputUi name="url" value={ui.url} onChange={updateUI} />
                 </FormField>
-                <FormField label="Basic Auth" help="Is the WFS secured with HTTP Basic Authentication?" style={ { width: '100%' } }>
-                    <CheckboxUi name="isBasicAuth"
-                        checked={ ui.isBasicAuth }
-                        toggle={ false }
-                        reverse={ false }
-                        onChange={ updateUI } />
+                <FormField label="Basic Auth" help="Is the WFS secured with HTTP Basic Authentication?" style={{ width: '100%' }}>
+                    <Box pad={{ left: 'small', bottom: 'small' }}>
+                        <CheckboxUi name="isBasicAuth"
+                            checked={ui.isBasicAuth}
+                            toggle={false}
+                            reverse={false}
+                            onChange={updateUI} />
+                    </Box>
                 </FormField>
                 <FormField label="User"
                     help="The HTTP Basic Authentication user name"
-                    style={ { width: '100%' } }
-                    hidden={ !ui.isBasicAuth }>
-                    <TextInputUi name="user" value={ ui.user } onChange={ updateUI } />
+                    style={{ width: '100%' }}
+                >
+                    <TextInputUi name="baUser" disabled={!ui.isBasicAuth} value={ui.baUser} onChange={updateUI} autocomplete="new-password" />
                 </FormField>
                 <FormField label="Password"
                     help="The HTTP Basic Authentication password"
-                    style={ { width: '100%' } }
-                    hidden={ !ui.isBasicAuth }>
-                    <PasswordInputUi name="password" value={ ui.password } onChange={ updateUI } />
+                    style={{ width: '100%' }}
+                >
+                    <PasswordInputUi name="baPassword" disabled={!ui.isBasicAuth} value={ui.baPassword} onChange={updateUI} autocomplete="new-password" />
                 </FormField>
             </ServiceAdd>
         );

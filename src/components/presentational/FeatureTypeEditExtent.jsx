@@ -24,15 +24,7 @@ import PropTypes from 'prop-types';
 import ui from 'redux-ui';
 import moment from 'moment';
 
-import Section from 'grommet/components/Section';
-import Box from 'grommet/components/Box';
-import Heading from 'grommet/components/Heading';
-import Form from 'grommet/components/Form';
-import FormFields from 'grommet/components/FormFields';
-import FormField from 'grommet/components/FormField';
-
-import Accordion from 'grommet/components/Accordion';
-import AccordionPanel from 'grommet/components/AccordionPanel';
+import { Box, Text, FormField } from 'grommet';
 
 import TextInputUi from 'xtraplatform-manager/src/components/common/TextInputUi';
 import uiValidator, { forbiddenChars } from 'xtraplatform-manager/src/components/common/ui-validator';
@@ -67,7 +59,7 @@ const validateTemporalBoundary = (isStart) => (value, ui) => {
 export default class FeatureTypeEditGeneral extends Component {
 
     _save = () => {
-        const {ui, validator, onChange} = this.props;
+        const { ui, validator, onChange } = this.props;
         if (validator.valid) {
             onChange({
                 extent: {
@@ -81,42 +73,36 @@ export default class FeatureTypeEditGeneral extends Component {
     }
 
     render() {
-        const {featureType, ui, updateUI, onChange, validator} = this.props;
+        const { featureType, ui, updateUI, onChange, validator } = this.props;
 
         return (
-            featureType && <Section pad={ { vertical: 'medium' } } full="horizontal">
-                                <Accordion animate={true} multiple={true}>
-                                    <AccordionPanel heading="Extent">
-                                        <Box pad={ { horizontal: 'medium ',vertical:"small"}  }>
-                                            <Heading tag="h4">
-                                                Temporal
-                                            </Heading>
-                                        </Box>
-                                        <Form compact={ false } pad={ { horizontal: 'medium', vertical: 'small' } }>
-                                            <FormFields>
-                                                <fieldset>
-                                                    <FormField label="Start of temporal extent" error={ validator.messages.start }>
-                                                        <TextInputUi name="start"
-                                                            value={ ui.start }
-                                                            onChange={ updateUI }
-                                                            onDebounce={ this._save } />
-                                                    </FormField>
-                                                    <FormField label="End of temporal extent" error={ validator.messages.end }>
-                                                        <TextInputUi name="end"
-                                                            placeHolder="now"
-                                                            value={ ui.end }
-                                                            onChange={ updateUI }
-                                                            onDebounce={ this._save } />
-                                                            
-                                                    </FormField>
-                                                </fieldset>
-                                            </FormFields>
-                                        </Form>
-                                        <FeatureTypeEditBBox featureType={featureType} onChange={this.props.onChange} />
-                                    </AccordionPanel>
-                                </Accordion>
-                           </Section>
-                           
+            featureType && <Box pad={{ horizontal: 'small', vertical: 'medium' }} fill={true}>
+
+                <FeatureTypeEditBBox featureType={featureType} onChange={this.props.onChange} />
+
+                {/*<Box flex={false} pad={{ bottom: 'xlarge' }}>
+                    <Box pad={{ top: 'large', bottom: 'xsmall' }}>
+                        <Text weight='bold'>Temporal extent</Text>
+                    </Box>
+
+                    <FormField label="Start of temporal extent" error={validator.messages.start}>
+                        <TextInputUi name="start"
+                            value={ui.start}
+                            onChange={updateUI}
+                            onDebounce={this._save} />
+                    </FormField>
+
+                    <FormField label="End of temporal extent" error={validator.messages.end}>
+                        <TextInputUi name="end"
+                            placeHolder="now"
+                            value={ui.end}
+                            onChange={updateUI}
+                            onDebounce={this._save} />
+
+                    </FormField>
+        </Box>*/}
+            </Box>
+
         );
     }
 }

@@ -16,6 +16,6 @@
     "jsheader": "0.0.2"
   },
   "dependencies": {
-    "xtraplatform-manager": "github:interactive-instruments/XtraPlatform-Manager"
+    "xtraplatform-manager": "1.1.1"
   }
 }

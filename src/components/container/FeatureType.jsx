@@ -22,53 +22,18 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { connectRequest, mutateAsync, requestAsync } from 'redux-query';
-import { hashHistory as history } from 'react-router';
-import ui from 'redux-ui';
-
-import Split from 'grommet/components/Split';
-import Article from 'grommet/components/Article';
-import Header from 'grommet/components/Header';
-import Heading from 'grommet/components/Heading';
-import Section from 'grommet/components/Section';
-import Box from 'grommet/components/Box';
-import Button from 'grommet/components/Button';
-import Notification from 'grommet/components/Notification';
-import List from 'grommet/components/List';
-import ListItem from 'grommet/components/ListItem';
-import Sidebar from 'grommet/components/Sidebar';
-import Form from 'grommet/components/Form';
-import FormFields from 'grommet/components/FormFields';
-import FormField from 'grommet/components/FormField';
-import LinkPreviousIcon from 'grommet/components/icons/base/LinkPrevious';
-import MoreIcon from 'grommet/components/icons/base/More';
-import AddIcon from 'grommet/components/icons/base/Add';
-import MinusIcon from 'grommet/components/icons/base/Subtract';
-import RadialIcon from 'grommet/components/icons/base/Radial';
-import StatusIcon from 'grommet/components/icons/Status';
-import Animate from 'grommet/components/Animate';
-import Collapsible from 'grommet/components/Collapsible';
-import ListPlaceholder from 'grommet-addons/components/ListPlaceholder';
+import { mutateAsync, requestAsync } from 'redux-query';
+import { push } from 'redux-little-router';
 
 //TODO: will be in next grommet release
-//import Toast from 'grommet/components/Toast';
-import Toast from '../common/Toast184';
+import { Layer, Text, Box } from 'grommet';
+import Toast from '../common/Toast';
 
-import Anchor from 'xtraplatform-manager/src/components/common/AnchorLittleRouter';
 import { actions } from 'xtraplatform-manager/src/reducers/service';
 
 import FeatureTypeEdit from '../presentational/FeatureTypeEdit';
-import PropertyEdit from '../presentational/PropertyEdit';
-import FeatureTypeEditGeneral from '../presentational/FeatureTypeEditGeneral';
-import FeatureTypeEditProperties from '../presentational/FeatureTypeEditProperties';
 import { getService, getFeatureType, getMappingsForFeatureType, getSelectedService, getSelectedFeatureType, getSelectedProperty } from '../../reducers/service'
 import ServiceApi from '../../apis/ServiceApiWfsProxy'
-
-
-@connectRequest(
-    (props) => ServiceApi.getServiceConfigQuery(props.urlParams.id)
-)
-
 
 @connect(
     (state, props) => {
@@ -82,18 +47,18 @@ import ServiceApi from '../../apis/ServiceApiWfsProxy'
             selectedProperty: getSelectedProperty(state) ? getSelectedProperty(state) : getFeatureType(state) ? getFeatureType(state).id : null,
             reloadPending: Object.values(state.queries).some(query => !query.isMutation && query.isPending),
             queryPending: Object.values(state.queries).some(query => query.isMutation && query.isPending),
-            queryFinished: Object.values(state.queries).some(query => query.isMutation && query.isFinished && (Date.now() - query.lastUpdated < 500)) && Object.values(state.queries).every(query => !query.isMutation || query.isFinished)
+            queryFinished: Object.values(state.queries).some(query => query.isMutation && query.isFinished && (Date.now() - query.lastUpdated < 1500)) && Object.values(state.queries).every(query => /*!query.isMutation || */query.isFinished)
         }
     },
     (dispatch) => {
         return {
             ...bindActionCreators(actions, dispatch),
             updateFeatureType: (id, ftid, ftqn, change) => {
-                // TODO: return updated service on POST request
+
                 dispatch(mutateAsync(ServiceApi.updateFeatureTypeQuery(id, ftid, ftqn, change)))
                     .then((result) => {
                         if (result.status === 200) {
-                            dispatch(requestAsync(ServiceApi.getServiceConfigQuery(id)));
+                            //dispatch(requestAsync(ServiceApi.getServiceConfigQuery(id, true)));
                         } else {
                             console.log('ERR', result)
                             const error = result.body && result.body.error || {}
@@ -115,17 +80,18 @@ import ServiceApi from '../../apis/ServiceApiWfsProxy'
                 // TODO: return updated service on POST request
                 dispatch(mutateAsync(ServiceApi.updateServiceQuery(service)))
                     .then((result) => {
-                        dispatch(requestAsync(ServiceApi.getServiceConfigQuery(service.id)));
+                        dispatch(requestAsync(ServiceApi.getServiceConfigQuery(service.id, true)));
                     })
             },
             reloadService: (service) => {
-                setTimeout(() => dispatch(requestAsync(ServiceApi.getServiceConfigQuery(service.id))), 1000);
-            }
+                setTimeout(() => dispatch(requestAsync(ServiceApi.getServiceConfigQuery(service.id, true))), 1000);
+            },
+            goto: url => dispatch(push(url))
         }
     })
 
 
-export default class FeatureTypeShow extends Component {
+export default class FeatureType extends Component {
 
     constructor() {
         super();
@@ -142,7 +108,7 @@ export default class FeatureTypeShow extends Component {
             reloadService(service);
         }*/
 
-        const updateService = !reloadPending && service && service.featureProvider && service.featureProvider.mappingStatus && service.featureProvider.mappingStatus.enabled && !service.featureProvider.mappingStatus.supported;
+        const updateService = !reloadPending && service && service.featureProvider && service.featureProvider.mappingStatus && service.featureProvider.mappingStatus.enabled && !service.featureProvider.mappingStatus.supported && !service.featureProvider.mappingStatus.errorMessage;
 
         if (!this.timer && this.counter < 30 && updateService) {
             console.log('UP');
@@ -155,15 +121,17 @@ export default class FeatureTypeShow extends Component {
         } else {
             this.counter = 0;
         }
-
+        //TODO: wrap with state and timeout
         return (
             (service && featureType) &&
-            <div className="xtraplatform-toast">
-                {queryFinished && <Toast status='ok' size="medium" duration={1500}>
-                    Saved!
-                                   </Toast>}
+            <Box fill={true}>
+                {/*<Toast show={queryFinished}></Toast>*/}
                 <FeatureTypeEdit {...this.props} />
-            </div>
+            </Box>
         );
     }
 }
+
+/*<Toast status='ok' size="medium" duration={1500}>
+                    Saved!
+        </Toast>}*/

@@ -19,39 +19,17 @@
  * for e-Government).
  */
 
-import React, { Component } from 'react';
+import React, { Component, PureComponent } from 'react';
 
-import Split from 'grommet/components/Split';
-import Article from 'grommet/components/Article';
-import Header from 'grommet/components/Header';
-import Heading from 'grommet/components/Heading';
-import Section from 'grommet/components/Section';
-import Box from 'grommet/components/Box';
-import Button from 'grommet/components/Button';
-import Notification from 'grommet/components/Notification';
-import List from 'grommet/components/List';
-import ListItem from 'grommet/components/ListItem';
-import Sidebar from 'grommet/components/Sidebar';
-import Form from 'grommet/components/Form';
-import FormFields from 'grommet/components/FormFields';
-import FormField from 'grommet/components/FormField';
-import LinkPreviousIcon from 'grommet/components/icons/base/LinkPrevious';
-import MoreIcon from 'grommet/components/icons/base/More';
-import AddIcon from 'grommet/components/icons/base/Add';
-import MinusIcon from 'grommet/components/icons/base/Subtract';
-import RadialIcon from 'grommet/components/icons/base/Radial';
-import ClockIcon from 'grommet/components/icons/base/Clock';
-import LocationIcon from 'grommet/components/icons/base/Location';
-import TableIcon from 'grommet/components/icons/base/Table';
-import FingerPrintIcon from 'grommet/components/icons/base/FingerPrint';
-import FilterIcon from 'grommet/components/icons/base/Filter';
-import StatusIcon from 'grommet/components/icons/Status';
-import Animate from 'grommet/components/Animate';
-import ListPlaceholder from 'grommet-addons/components/ListPlaceholder';
+import Split from 'xtraplatform-manager/src/components/common/Split';
+import Header from 'xtraplatform-manager/src/components/common/Header';
+import { Text, Box, Tabs, Tab } from 'grommet';
+
+import { LinkPrevious as LinkPreviousIcon, Clock as ClockIcon, Location as LocationIcon, Table as TableIcon, FingerPrint as FingerPrintIcon, Filter as FilterIcon } from 'grommet-icons';
 
 import Anchor from 'xtraplatform-manager/src/components/common/AnchorLittleRouter';
 import Badge from 'xtraplatform-manager/src/components/common/GrommetBadge';
-import CheckboxUi from 'xtraplatform-manager/src/components/common/CheckboxUi';
+import NotificationWithCollapsibleDetails from 'xtraplatform-manager/src/components/common/NotificationWithCollapsibleDetails';
 
 import PropertyEdit from '../presentational/PropertyEdit';
 import FeatureTypeEditGeneral from '../presentational/FeatureTypeEditGeneral';
@@ -60,6 +38,8 @@ import FeatureTypeEditProperties from '../presentational/FeatureTypeEditProperti
 
 import { shallowDiffers } from 'xtraplatform-manager/src/util';
 import FeatureTypeEditTiles from './FeatureTypeEditTiles';
+//import FeatureTypeEditGsfs from './FeatureTypeEditGsfs';
+import FeatureTypeEditGsfs from '../container/Style';
 
 /*@ui({
     //key: 'FeatureTypeShow',
@@ -70,46 +50,49 @@ import FeatureTypeEditTiles from './FeatureTypeEditTiles';
     }
 })*/
 
-export default class FeatureTypeEdit extends Component {
+const tilesExt = item => item.capabilities && item.capabilities.find(ext => ext.extensionType === 'TILES')
+const gsfsExt = item => item.capabilities && item.capabilities.find(ext => ext.extensionType === 'GSFS')
 
-    shouldComponentUpdate(nextProps) {
+export default class FeatureTypeEdit extends PureComponent {
+
+    /*shouldComponentUpdate(nextProps) {
         //console.log('CHK FT', this.props.featureType, nextProps.featureType)
         if (shallowDiffers(this.props.featureType, nextProps.featureType, false, ['mappings'])
-                || (this.props.featureType.mappings && this.props.featureType.mappings.toString() !== nextProps.featureType.mappings.toString())
-                || this.props.selectedProperty !== nextProps.selectedProperty
-                //|| this.props.queryPending !== nextProps.queryPending
-                //|| this.props.queryFinished !== nextProps.queryFinished
-                || shallowDiffers(this.props.mappings[this.props.selectedProperty], nextProps.mappings[nextProps.selectedProperty])
-        //TODO|| shallowDiffers(this.props.service.serviceProperties.mappingStatus, nextProps.service.serviceProperties.mappingStatus)
+            || (this.props.featureType.mappings && this.props.featureType.mappings.toString() !== nextProps.featureType.mappings.toString())
+            || this.props.selectedProperty !== nextProps.selectedProperty
+            //|| this.props.queryPending !== nextProps.queryPending
+            //|| this.props.queryFinished !== nextProps.queryFinished
+            || shallowDiffers(this.props.mappings[this.props.selectedProperty], nextProps.mappings[nextProps.selectedProperty])
+            //TODO|| shallowDiffers(this.props.service.serviceProperties.mappingStatus, nextProps.service.serviceProperties.mappingStatus)
         ) {
-            //console.log('UP FT', this.props.featureType, nextProps.featureType)
+            console.log('UP FT', this.props.featureType, nextProps.featureType)
             return true;
         }
 
         return false;
-    }
+    }*/
 
     _onSelect = (selected) => {
-        const {selectProperty} = this.props;
+        const { selectProperty } = this.props;
 
         selectProperty(selected);
     }
 
     _save = () => {
-        const {ui, service, featureType, updateFeatureType} = this.props;
+        const { ui, service, featureType, updateFeatureType } = this.props;
         //console.log('SAVE', service.id, featureType.id, ui)
         updateFeatureType(service.id, featureType.id, featureType.qn, ui);
     }
 
     _onFeatureTypeChange = (change) => {
-        const {service, featureType, updateFeatureType} = this.props;
+        const { service, featureType, updateFeatureType } = this.props;
 
         //console.log('SAVE', service.id, featureType.id, change)
         updateFeatureType(service.id, featureType.origId, featureType.qn, change);
     }
 
     _enableMapping = () => {
-        const {service, featureType, updateService} = this.props;
+        const { service, featureType, updateService } = this.props;
         console.log('_enableMapping')
         updateService({
             id: service.id,
@@ -126,7 +109,7 @@ export default class FeatureTypeEdit extends Component {
     _beautify(path) {
         /// TODO
         //return path.substring(path.lastIndexOf(':') + 1)
-        const {service} = this.props;
+        const { service } = this.props;
         let displayKey;
         displayKey = (service.nameSpaces[path.substring(path.lastIndexOf('http:'), path.lastIndexOf(':'))] || 'ns1') + path.substring(path.lastIndexOf(':'))
         if (path.indexOf('@') !== -1) {
@@ -135,27 +118,27 @@ export default class FeatureTypeEdit extends Component {
         return displayKey;
     }
 
-    _iconify(path, mapping) {
-        return mapping.filterable && mapping.type === 'SPATIAL' ? <span><span style={ { marginRight: '5px' } }>{ path }</span>
-                                                                  <Badge title="Used for bbox filters">
-                                                                      <FilterIcon size="xsmall" colorIndex="light-1" /> </Badge>
-                                                                  </span>
-            : mapping.filterable && mapping.type === 'TEMPORAL' ? <span><span style={ { marginRight: '5px' } }>{ path }</span>
-                                                                  <Badge title="Used for time filters">
-                                                                      <FilterIcon size="xsmall" colorIndex="light-1" /> </Badge>
-                                                                  </span>
-                : mapping.filterable ? <span><span style={ { marginRight: '5px' } }>{ path }</span>
-                                       <Badge title="Usable in filters">
-                                           <FilterIcon size="xsmall" colorIndex="light-1" /> </Badge>
-                                       </span>
-                    : path;
+    _getFilterBadge(mapping) {
+        return mapping.filterable && mapping.type === 'SPATIAL'
+            ? <Badge title="Used for spatial filters">
+                <FilterIcon size="list" color="light-1" />
+            </Badge>
+            : /*mapping.filterable && mapping.type === 'TEMPORAL'
+                ? <Badge title="Used for time filters">
+                    <FilterIcon size="list" color="light-1" />
+                </Badge>
+                : mapping.filterable
+                    ? <Badge title="Usable in filters">
+                        <FilterIcon size="list" color="light-1" />
+                    </Badge>
+                    :*/ null;
     }
 
     _getTypeIcon(type) {
-        return type === 'SPATIAL' ? <LocationIcon size="xsmall" title="spatial" />
-            : type === 'TEMPORAL' ? <ClockIcon size="xsmall" title="temporal" />
-                : type === 'VALUE' ? <TableIcon size="xsmall" title="value" />
-                    : type === 'ID' ? <FingerPrintIcon size="xsmall" title="id" />
+        return type === 'SPATIAL' ? <LocationIcon size="list" title="spatial" />
+            : type === 'TEMPORAL' ? <ClockIcon size="list" title="temporal" />
+                : type === 'VALUE' ? <TableIcon size="list" title="value" />
+                    : type === 'ID' ? <FingerPrintIcon size="list" title="id" />
                         : null
     }
 
@@ -196,9 +179,10 @@ export default class FeatureTypeEdit extends Component {
 
             leafs.push({
                 _id: key,
-                title: this._iconify(this._beautify(path), mappings[key]['general']),
+                title: this._beautify(path),
                 icon: this._getTypeIcon(mappings[key]['general'].type),
                 iconTitle: mappings[key]['general'].type,
+                badge: this._getFilterBadge(mappings[key]['general']),
                 /*right: <span onClick={ (e) => {
                     e.stopPropagation();
                 } }><CheckboxUi name="enabled"
@@ -227,26 +211,47 @@ export default class FeatureTypeEdit extends Component {
         })
 
         return (
-            <FeatureTypeEditProperties tree={ tree }
-                selected={ featureType.id }
-                expanded={ expanded }
-                mappingStatus={ mappingStatus }
-                onSelect={ this._onSelect }
-                onActivate={ this._enableMapping } />
+            <FeatureTypeEditProperties tree={tree}
+                selected={featureType.id}
+                expanded={expanded}
+                mappingStatus={mappingStatus}
+                onSelect={this._onSelect}
+                onActivate={this._enableMapping} />
         );
     }
 
+    _onTabSelect = (label) => {
+        const { service, featureType, goto } = this.props;
+        goto(
+            {
+                pathname: '/services/' + service.id + '/' + featureType.origId,
+                query: {
+                    tab: label
+                }
+            })
+    }
+
     render() {
-        const {featureType, service, mappings, selectedProperty, getTypedComponent, queryPending, queryFinished} = this.props;
-        const mappingStatus = service && service.serviceProperties && service.serviceProperties.mappingStatus;
+        const { featureType, service, mappings, selectedProperty, getTypedComponent, queryPending, queryFinished, urlQuery } = this.props;
+        const mappingStatus = service && service.featureProvider && service.featureProvider.mappingStatus;
 
         //const {prop} = this.state;
         let properties,
             general,
             cleanMapping,
-            localSelectedProperty;
-        if (mappings && featureType) {
+            localSelectedProperty,
+            mappingError;
+        console.log('MS', mappingStatus)
+        if (mappings && featureType && mappingStatus && mappingStatus.enabled && mappingStatus.supported) {
             properties = this._renderProperties(featureType, mappings, mappingStatus);
+        } else if (mappingStatus && mappingStatus.enabled && !mappingStatus.supported && mappingStatus.errorMessage) {
+            mappingError = <NotificationWithCollapsibleDetails
+                size="medium"
+                pad="medium"
+                margin={{ bottom: 'small' }}
+                status="critical"
+                message={mappingStatus.errorMessage}
+                details={mappingStatus.errorMessageDetails} />
         }
         if (selectedProperty) {
             localSelectedProperty = selectedProperty
@@ -254,49 +259,87 @@ export default class FeatureTypeEdit extends Component {
             localSelectedProperty = featureType.id
         }
         if (mappings && localSelectedProperty && mappings[localSelectedProperty]) {
-            let {id, index, qn, ...rest} = mappings[localSelectedProperty];
+            let { id, index, qn, ...rest } = mappings[localSelectedProperty];
             cleanMapping = rest;
         }
 
+        const tilesEnabled = tilesExt(featureType) && tilesExt(featureType).enabled;
+
+        const editTabs = ['General', 'Extent', 'Mapping', 'Layer'];
+        const selectedTab = (urlQuery && urlQuery.tab && editTabs.findIndex(label => label === urlQuery.tab)) || 0;
+
         return (
             (service && featureType) &&
-            <Split flex="left"
-                separator={ true }
+            /*<Split flex="left"
+                separator={true}
                 priority="left"
-                onResponsive={ this._onResponsive }>
-                <div>
-                    <Header pad={ { horizontal: "small", between: 'small', vertical: "medium" } }
-                        justify="start"
-                        size="large"
-                        colorIndex="light-2">
-                        <Anchor icon={ <LinkPreviousIcon /> } path={ '/services/' + service.id } a11yTitle="Return" />
-                        <Heading tag="h1"
-                            margin="none"
-                            strong={ true }
-                            truncate={ true }>
-                            { featureType.label }
-                        </Heading>
-                        { /*sidebarControl*/ }
-                    </Header>
-                    <Article pad="none" align="start" primary={ true }>
-                        <FeatureTypeEditGeneral featureType={ featureType } onChange={ this._onFeatureTypeChange } service={service} />
-                        <FeatureTypeEditExtent featureType={ featureType } onChange={ this._onFeatureTypeChange } />
-                        <FeatureTypeEditTiles featureType={featureType} onChange={this._onFeatureTypeChange} />
-                        { properties }
-                        <Box pad={ { vertical: 'medium' } } />
-                    </Article>
-                </div>
-                { (localSelectedProperty && mappings && mappings[localSelectedProperty]) ?
-                  <PropertyEdit title={ this._beautify(mappings[localSelectedProperty].qn) }
-                      qn={ mappings[localSelectedProperty].qn }
-                      mappings={ cleanMapping }
-                      onChange={ this._onFeatureTypeChange }
-                      isFeatureType={ localSelectedProperty === featureType.id }
-                      isSaving={ queryPending }
-                      getTypedComponent={ getTypedComponent } />
-                  :
-                  <Sidebar size="large" colorIndex="light-2" /> }
-            </Split>
+        onResponsive={this._onResponsive}>*/
+            <Box fill={true}>
+                <Header border={{ side: 'bottom', size: 'small', color: 'light-4' }}
+                    justify="between"
+                    size="large">
+                    <Box direction='row' gap='small' align='center'>
+                        {/*<Anchor icon={<LinkPreviousIcon />} path="/services" a11yTitle="Return" />*/}
+                        <Text size='large' weight={500} truncate={true}>{featureType.label}</Text>
+                    </Box>
+                </Header>
+                <Tabs justify='start' margin={{ top: 'small' }} activeIndex={selectedTab} onActive={index => this._onTabSelect(editTabs[index])} >
+                    <Tab title='General'>
+                        <Box fill={true} overflow={{ vertical: 'auto' }}>
+                            <FeatureTypeEditGeneral key={featureType.id} id={featureType.origId} label={featureType.label} onChange={this._onFeatureTypeChange} />
+                        </Box>
+                    </Tab>
+                    <Tab title='Extent'>
+                        <Box fill={true} overflow={{ vertical: 'auto' }}>
+                            <FeatureTypeEditExtent key={featureType.id} featureType={featureType} onChange={this._onFeatureTypeChange} />
+                        </Box>
+                    </Tab>
+                    {/*tilesEnabled && <Tab title='Tiles'>
+                        <Box fill={true} overflow={{ vertical: 'auto' }}>
+                            <FeatureTypeEditTiles featureType={featureType} onChange={this._onFeatureTypeChange} />
+                        </Box>
+        </Tab>*/}
+                    <Tab title='Mapping'>
+                        {properties && <Box direction="row" fill={true}>
+                            <Box fill="vertical" basis="1/2" overflow={{ vertical: 'auto' }}>
+                                {properties}
+                            </Box>
+                            <Box fill="vertical" basis="1/2" background="light-1" overflow={{ vertical: 'auto' }}>
+                                {localSelectedProperty && mappings && mappings[localSelectedProperty] &&
+                                    <PropertyEdit title={this._beautify(mappings[localSelectedProperty].qn)}
+                                        key={featureType.id}
+                                        qn={mappings[localSelectedProperty].qn}
+                                        mappings={cleanMapping}
+                                        onChange={this._onFeatureTypeChange}
+                                        isFeatureType={localSelectedProperty === featureType.id}
+                                        isSaving={queryPending}
+                                        getTypedComponent={getTypedComponent} />}
+                            </Box>
+                        </Box>}
+                        {mappingError && <Box fill={true} pad="small" overflow={{ vertical: 'auto' }}>
+                            {mappingError}
+                        </Box>}
+                    </Tab>
+                    <Tab title='Layer'>
+                        <Box fill={true} overflow={{ vertical: 'auto' }}>
+                            <FeatureTypeEditGsfs featureType={featureType} gsfsExt={gsfsExt(featureType)} serviceId={service.id} onChange={this._onFeatureTypeChange} />
+                        </Box>
+                    </Tab>
+                </Tabs >
+
+                {/*(localSelectedProperty && mappings && mappings[localSelectedProperty]) ?
+                    <PropertyEdit title={this._beautify(mappings[localSelectedProperty].qn)}
+                        qn={mappings[localSelectedProperty].qn}
+                        mappings={cleanMapping}
+                        onChange={this._onFeatureTypeChange}
+                        isFeatureType={localSelectedProperty === featureType.id}
+                        isSaving={queryPending}
+                        getTypedComponent={getTypedComponent} />
+                    :
+                    <Box fill='vertical' size="large" background="light-2" />
+                */}
+            </Box >
+            /*</Split>*/
         );
     }
 }

@@ -23,71 +23,65 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ui from 'redux-ui';
 
-import Section from 'grommet/components/Section';
-import Box from 'grommet/components/Box';
-import Heading from 'grommet/components/Heading';
-import Form from 'grommet/components/Form';
-import FormFields from 'grommet/components/FormFields';
-import FormField from 'grommet/components/FormField';
-import Columns from 'grommet/components/Columns';
+import { Box, FormField, Text } from 'grommet';
 
 import TextInputUi from 'xtraplatform-manager/src/components/common/TextInputUi';
 import CheckboxUi from 'xtraplatform-manager/src/components/common/CheckboxUi';
 import uiValidator, { forbiddenChars } from 'xtraplatform-manager/src/components/common/ui-validator';
 
-const validateSpatialBoundary = (isX,isMin) => (value, ui) => {
-    if(value.toString().includes(','))
+const validateSpatialBoundary = (isX, isMin) => (value, ui) => {
+    if (value.toString().includes(','))
         return "use \'.\' instead of \',\' as a decimal seperator"
-        
-    value=parseInt(value);
-    if(isX){
-        if(value < -180 || value > 180){
+
+    value = parseInt(value);
+    if (isX) {
+        if (value < -180 || value > 180) {
             return "not a valid bbox"
         }
     }
-    if(!isX){
-        if(value < -90 || value > 90){
+    if (!isX) {
+        if (value < -90 || value > 90) {
             return "not a valid bbox"
-        }        
+        }
     }
-    if(isMin && isX){
-        if(value >= ui.upperRightX){
+    if (isMin && isX) {
+        if (value >= ui.upperRightX) {
             return "invalid, must be smaller then X coordinate upper right corner"
         }
-    
+
     }
-    if(isMin && !isX){
-        if(value >= ui.upperRightY){
+    if (isMin && !isX) {
+        if (value >= ui.upperRightY) {
             return "invalid, must be smaller then Y coordinate upper right corner"
         }
     }
-    if(!isMin && isX){
-        if(value <= ui.lowerLeftX){
+    if (!isMin && isX) {
+        if (value <= ui.lowerLeftX) {
             return "invalid, must be greater then X coordinate lower left corner"
         }
     }
-    if(!isMin && !isX){
-        if(value <= ui.lowerLeftY){
+    if (!isMin && !isX) {
+        if (value <= ui.lowerLeftY) {
             return "invalid, must be greater then Y coordinate lower left corner"
         }
     }
-    
-    
-  
-    
+
+
+
+
 }
 
 @ui({
     state: {
-        lowerLeftX: (props) => props.featureType.extent.spatialComputed ?  "" : props.featureType.extent.spatial.xmin,
+        lowerLeftX: (props) => props.featureType.extent.spatialComputed ? "" : props.featureType.extent.spatial.xmin,
         lowerLeftY: (props) => props.featureType.extent.spatialComputed ? "" : props.featureType.extent.spatial.ymin,
         upperRightX: (props) => props.featureType.extent.spatialComputed ? "" : props.featureType.extent.spatial.xmax,
         upperRightY: (props) => props.featureType.extent.spatialComputed ? "" : props.featureType.extent.spatial.ymax,
-        temporal: (props)=> props.featureType.extent.temporal,
-        temporalStart:(props)=> props.featureType.extent.temporal.start,
-        temporalEnd:(props)=> props.featureType.extent.temporal.end,
-        computed: (props) => props.featureType.extent.spatialComputed 
-          
+        temporal: (props) => props.featureType.extent.temporal,
+        temporalStart: (props) => props.featureType.extent.temporal.start,
+        temporalEnd: (props) => props.featureType.extent.temporal.end,
+        computed: (props) => props.featureType.extent.spatialComputed
+
     }
 })
 
@@ -101,11 +95,11 @@ const validateSpatialBoundary = (isX,isMin) => (value, ui) => {
 export default class FeatureTypeEditBBox extends Component {
 
     _save = () => {
-        const {ui, validator, onChange} = this.props;
+        const { ui, validator, onChange } = this.props;
         if (validator.valid) {
             onChange({
                 extent: {
-                    temporal:{
+                    temporal: {
                         start: ui.temporalStart,
                         end: ui.temporalEnd
                     },
@@ -115,75 +109,68 @@ export default class FeatureTypeEditBBox extends Component {
                         xmax: ui.upperRightX,
                         ymax: ui.upperRightY
                     },
-                    spatialComputed: false
+                    spatialComputed: ui.computed
                 }
             });
         }
     }
- 
-    
+
+
 
 
     render() {
-        const {featureType, ui, updateUI, onChange, validator} = this.props;
+        const { featureType, ui, updateUI, onChange, validator } = this.props;
 
         return (
-            featureType && <Section pad={ { vertical: 'medium' } } full="horizontal">
-                                <Columns size='small' justify='start'>
-                                    <Box pad={ {horizontal:'medium'} }>
-                                        <Heading tag="h4">
-                                            Bounding Box
-                                        </Heading>
-                                    </Box>
-                                    <Box pad={ {horizontal:'medium'} }>
-                                        <CheckboxUi name='computed'
-                                            label='computed'
-                                            checked={ ui.computed } 
-                                            onChange={updateUI} 
-                                            disabled={!ui.computed}
-                                            toggle={ false }
-                                            reverse={ false } />
-                                    </Box>
-                                </Columns>
-                                {!ui.computed  && <Form compact={ false } pad={ { horizontal: 'medium', vertical: 'small' } }>
-                                   <FormFields>
-                                       <fieldset>
-                                           <FormField label="X coordinate lower left corner" error={ validator.messages.lowerLeftX }>
-                                               <TextInputUi name="lowerLeftX"
-                                                   value={ ui.lowerLeftX }
-                                                   placeHolder="Computed Values should not be changed"
-                                                   onChange={ updateUI }
-                                                   onDebounce={ this._save } />
-                                            </FormField>
+            featureType && <Box flex={false}>
+                <Box direction="row" justify='start' pad={{ bottom: 'small' }}>
+                    <Box pad={{ right: 'medium' }}>
+                        <Text weight='bold'>Spatial extent</Text>
+                    </Box>
+                    {/*<Box>
+                        <CheckboxUi name='computed'
+                            label='computed'
+                            checked={ui.computed}
+                            onChange={updateUI}
+                            onDebounce={this._save}
+                            toggle={true} />
+                    </Box>*/}
+                </Box>
+                {!ui.computed && <Box>
+                    <FormField label="X coordinate lower left corner" error={validator.messages.lowerLeftX}>
+                        <TextInputUi name="lowerLeftX"
+                            value={ui.lowerLeftX}
+                            placeHolder="Computed Values should not be changed"
+                            onChange={updateUI}
+                            onDebounce={this._save} />
+                    </FormField>
 
-                                           <FormField label="Y coordinate lower left corner" error={ validator.messages.lowerLeftY }>
-                                                   <TextInputUi name="lowerLeftY"
-                                                   value={ ui.lowerLeftY }
-                                                   placeHolder="Computed Values should not be changed"
-                                                   onChange={ updateUI }
-                                                   onDebounce={ this._save }/>
-                                           </FormField>
+                    <FormField label="Y coordinate lower left corner" error={validator.messages.lowerLeftY}>
+                        <TextInputUi name="lowerLeftY"
+                            value={ui.lowerLeftY}
+                            placeHolder="Computed Values should not be changed"
+                            onChange={updateUI}
+                            onDebounce={this._save} />
+                    </FormField>
 
-                                           <FormField label="X coordinate upper right corner" error={ validator.messages.upperRightX }>
-                                               <TextInputUi name="upperRightX"
-                                                  value={ ui.upperRightX }
-                                                  placeHolder="Computed Values should not be changed"
-                                                   onChange={ updateUI }
-                                                   onDebounce={ this._save } />
-                                           </FormField>
+                    <FormField label="X coordinate upper right corner" error={validator.messages.upperRightX}>
+                        <TextInputUi name="upperRightX"
+                            value={ui.upperRightX}
+                            placeHolder="Computed Values should not be changed"
+                            onChange={updateUI}
+                            onDebounce={this._save} />
+                    </FormField>
 
-                                           <FormField label="Y coordinate upper right corner" error={ validator.messages.upperRightY }>
-                                               <TextInputUi name="upperRightY"
-                                                  value={ ui.upperRightY }
-                                                  placeHolder="Computed Values should not be changed"
-                                                   onChange={ updateUI }
-                                                   onDebounce={ this._save }/>
-                                           </FormField>
-                                       </fieldset>
-                                   </FormFields>
-                               </Form>}
-                               
-                           </Section>
+                    <FormField label="Y coordinate upper right corner" error={validator.messages.upperRightY}>
+                        <TextInputUi name="upperRightY"
+                            value={ui.upperRightY}
+                            placeHolder="Computed Values should not be changed"
+                            onChange={updateUI}
+                            onDebounce={this._save} />
+                    </FormField>
+                </Box>}
+
+            </Box>
         );
     }
 }

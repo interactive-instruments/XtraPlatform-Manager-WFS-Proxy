@@ -10,7 +10,7 @@ import ServiceApi from 'xtraplatform-manager/src/apis/ServiceApi'
 
 
 const ServiceApiWfsProxy = {
-    getServiceConfigQuery: function(id) {
+    getServiceConfigQuery: function (id, reload) {
         return {
             url: `${ServiceApi.URL}${id}/config/`,
             transform: (serviceConfig) => normalizeServiceConfigs([serviceConfig]).entities,
@@ -19,11 +19,11 @@ const ServiceApiWfsProxy = {
                 featureTypes: (prev, next) => next,
                 mappings: (prev, next) => next
             },
-            force: true
+            force: reload === true
         }
     },
 
-    updateFeatureTypeQuery: function(id, ftid, ftqn, change) {
+    updateFeatureTypeQuery: function (id, ftid, ftqn, change) {
         var body;
         if (change.mappings) {
             body = {
@@ -53,19 +53,30 @@ const ServiceApiWfsProxy = {
                 headers: {
                     'Content-Type': 'application/json'
                 }
-            } /*,
+            },
+            /*transform: (serviceConfig) => normalizeServiceConfigs([serviceConfig]).entities,
+            update: {
+                serviceConfigs: (prev, next) => next,
+                featureTypes: (prev, next) => next,
+                mappings: (prev, next) => next
+            },*/
             optimisticUpdate: {
-                featureTypes: (prev) => Object.assign({}, prev, {
-                    [ftid]: {
-                        ...prev[ftid],
-                        ...change
+                featureTypes: (prev) => {
+                    if (change.mappings) {
+                        return prev;
                     }
-                })
-            }*/
+                    return Object.assign({}, prev, {
+                        [`${id}_${ftid}`]: {
+                            ...prev[`${id}_${ftid}`],
+                            ...change
+                        }
+                    })
+                }
+            }
         }
     },
 
-    parseCatalogQuery: function(url) {
+    parseCatalogQuery: function (url) {
         return {
             url: `../rest/catalog/`,
             transform: (catalog) => ({

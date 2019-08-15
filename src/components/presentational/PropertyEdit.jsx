@@ -19,22 +19,16 @@
  * for e-Government).
  */
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 
-import Section from 'grommet/components/Section';
-import Article from 'grommet/components/Article';
-import Sidebar from 'grommet/components/Sidebar';
-import Header from 'grommet/components/Header';
-import Heading from 'grommet/components/Heading';
-import Box from 'grommet/components/Box';
-import Form from 'grommet/components/Form';
+import { Box } from 'grommet';
 
 //import MappingEdit from './MappingEdit';
 
 export default class PropertyEdit extends Component {
 
     _onMappingChange = (change) => {
-        const {qn, onChange, mappings} = this.props;
+        const { qn, onChange, mappings } = this.props;
         console.log(qn, change);
         onChange({
             mappings: {
@@ -47,39 +41,32 @@ export default class PropertyEdit extends Component {
     }
 
     render() {
-        const {title, mappings, isFeatureType, getTypedComponent, isSaving} = this.props;
+        const { title, mappings, isFeatureType, getTypedComponent, isSaving } = this.props;
 
         let baseMapping;
 
         return (
-            <Sidebar size="large" colorIndex="light-2">
-                <div>
-                    { Object.keys(mappings).map(
-                          (mimeType, i) => {
-                              if (i === 0) {
-                                  baseMapping = mappings[mimeType];
-                              }
-                              const MappingEdit = getTypedComponent('MappingEdit', mimeType)
-                              //console.log('ME', mimeType, MappingEdit)
-                              return MappingEdit && <Section key={ mimeType } pad={ i === 0 ? {
-                                                          top: 'none',
-                                                          bottom: 'medium'
-                                                      } : {
-                                                          vertical: 'medium'
-                                                      } } full="horizontal">
-                                                        <MappingEdit key={ mimeType }
-                                                            title={ title }
-                                                            mimeType={ mimeType }
-                                                            mapping={ mappings[mimeType] }
-                                                            baseMapping={ baseMapping }
-                                                            isFeatureType={ isFeatureType }
-                                                            onChange={ this._onMappingChange } />
-                                                    </Section>
-                          }
-                      ) }
-                    <Box pad={ { vertical: 'large' } } />
-                </div>
-            </Sidebar>
+            <Box flex={false} background="light-1" >
+                {Object.keys(mappings).map(
+                    (mimeType, i) => {
+                        if (i === 0) {
+                            baseMapping = mappings[mimeType];
+                        }
+                        const MappingEdit = getTypedComponent('MappingEdit', mimeType)
+                        console.log('ME', mimeType, MappingEdit)
+                        return MappingEdit && <Box flex={false} key={mimeType} pad={{ bottom: 'medium' }} fill="horizontal">
+                            <MappingEdit key={mimeType}
+                                title={title}
+                                mimeType={mimeType}
+                                mapping={mappings[mimeType]}
+                                baseMapping={baseMapping}
+                                isFeatureType={isFeatureType}
+                                onChange={this._onMappingChange} />
+                        </Box>
+                    }
+                )}
+                <Box pad={{ vertical: 'large' }} />
+            </Box>
         );
     }
 }

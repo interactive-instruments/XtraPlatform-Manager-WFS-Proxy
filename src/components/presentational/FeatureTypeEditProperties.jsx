@@ -19,25 +19,17 @@
  * for e-Government).
  */
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import ui from 'redux-ui';
 
-import Section from 'grommet/components/Section';
-import Box from 'grommet/components/Box';
-import Button from 'grommet/components/Button';
-import Title from 'grommet/components/Title';
-import Paragraph from 'grommet/components/Paragraph';
-
-import Accordion from 'grommet/components/Accordion';
-import AccordionPanel from 'grommet/components/AccordionPanel';
-
+import { Box, Button, Paragraph, Accordion, AccordionPanel, Text } from 'grommet';
 
 import GrommetTreeList from 'xtraplatform-manager/src/components/common/GrommetTreeList';
 
 class FeatureTypeEditProperties extends Component {
-    
+
     render() {
-        const {tree, selected, expanded, mappingStatus, onExpand, onSelect, onActivate,updateUI,ui} = this.props;
+        const { tree, selected, expanded, mappingStatus, onExpand, onSelect, onActivate, updateUI, ui } = this.props;
 
 
         const showButton = mappingStatus && !mappingStatus.enabled;
@@ -46,35 +38,31 @@ class FeatureTypeEditProperties extends Component {
         const showMapping = true; //mappingStatus && mappingStatus.enabled && mappingStatus.supported && !mappingStatus.loading;
 
         return (
-            <Section pad={ { vertical: 'medium' } } full="horizontal">
-                <Accordion animate={true} multiple={true}>
-                    <AccordionPanel heading="Mapping">
-                        { showButton && <Box pad={ { horizontal: 'medium', vertical: 'small' } }>
-                                            <Button label='Enable' secondary={ true } onClick={ onActivate } />
-                                        </Box> }
-                        { showError && <Box pad={ { horizontal: 'medium', vertical: 'small' } }>
-                                        <Title>
-                                            There is an issue with the service:
-                                        </Title>
-                                        <Paragraph>
-                                            { mappingStatus.errorMessage }
-                                        </Paragraph>
-                                        { mappingStatus.errorMessageDetails
-                                            && mappingStatus.errorMessageDetails.map((detail, i) => <Paragraph key={ i } margin='none'>
-                                                                                                        { detail }
-                                                                                                    </Paragraph>) }
-                                    </Box> }
-                        { showLoading && <Box pad={ { horizontal: 'medium', vertical: 'small' } }>
-                                            <Button label='Loading...' secondary={ true } />
-                                        </Box> }
-                        { showMapping && <GrommetTreeList tree={ tree }
-                                            expanded={ false }
-                                            selected={ false }
-                                            onExpand={ onExpand }
-                                            onSelect={ onSelect } /> }
-                    </AccordionPanel>
-                </Accordion>
-            </Section>
+            <Box pad={{ top: 'xsmall', horizontal: 'small' }} >
+                {showButton && <Box pad={{ horizontal: 'medium', vertical: 'small' }}>
+                    <Button label='Enable' secondary={true} onClick={onActivate} />
+                </Box>}
+                {showError && <Box pad={{ horizontal: 'medium', vertical: 'small' }}>
+                    <Text weight='bold'>
+                        There is an issue with the service:
+                                        </Text>
+                    <Paragraph>
+                        {mappingStatus.errorMessage}
+                    </Paragraph>
+                    {mappingStatus.errorMessageDetails
+                        && mappingStatus.errorMessageDetails.map((detail, i) => <Paragraph key={i} margin='none'>
+                            {detail}
+                        </Paragraph>)}
+                </Box>}
+                {showLoading && <Box pad={{ horizontal: 'medium', vertical: 'small' }}>
+                    <Button label='Loading...' secondary={true} />
+                </Box>}
+                {showMapping && <GrommetTreeList tree={tree}
+                    expanded={expanded}
+                    selected={selected}
+                    onExpand={onExpand}
+                    onSelect={onSelect} />}
+            </Box>
         );
     }
 }

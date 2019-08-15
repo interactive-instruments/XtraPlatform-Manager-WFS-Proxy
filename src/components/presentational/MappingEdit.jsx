@@ -22,25 +22,20 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ui from 'redux-ui';
+import styled from "styled-components";
 
-import Article from 'grommet/components/Article';
-import Header from 'grommet/components/Header';
-import Heading from 'grommet/components/Heading';
-import Form from 'grommet/components/Form';
-import Footer from 'grommet/components/Footer';
-import FormFields from 'grommet/components/FormFields';
-import FormField from 'grommet/components/FormField';
-import TextInput from 'grommet/components/TextInput';
-import Select from 'grommet/components/Select';
-import CheckBox from 'grommet/components/CheckBox';
-import Label from 'grommet/components/Label';
-import Collapsible from 'grommet/components/Collapsible';
+import Header from 'xtraplatform-manager/src/components/common/Header';
+import { Heading, Text, Form, FormField, Box } from 'grommet';
 
 import TextInputUi from 'xtraplatform-manager/src/components/common/TextInputUi';
 import CheckboxUi from 'xtraplatform-manager/src/components/common/CheckboxUi';
-import SelectUi from 'xtraplatform-manager/src/components/common/SelectUi';
+import Collapsible from 'xtraplatform-manager/src/components/common/Collapsible';
 import { shallowDiffers } from 'xtraplatform-manager/src/util';
 import uiValidator, { forbiddenChars } from 'xtraplatform-manager/src/components/common/ui-validator';
+
+const StyledCollapsible = styled(Collapsible)`
+width: 100%;
+`;
 
 const initState = {
     enabled: (props) => props.mapping.enabled || false,
@@ -61,7 +56,7 @@ const initState = {
 export default class MappingEdit extends Component {
 
     shouldComponentUpdate(nextProps) {
-        const {ui, updateUI, initStateExt, baseMapping, mimeType, isFeatureType, title} = this.props;
+        const { ui, updateUI, initStateExt, baseMapping, mimeType, isFeatureType, title } = this.props;
         const initStateMerged = {
             ...initState,
             ...initStateExt
@@ -86,7 +81,7 @@ export default class MappingEdit extends Component {
     }
 
     save = () => {
-        const {ui, validator, mimeType, onChange} = this.props;
+        const { ui, validator, mimeType, onChange } = this.props;
 
         if (validator.valid) {
             onChange({
@@ -96,52 +91,45 @@ export default class MappingEdit extends Component {
     }
 
     render() {
-        let {ui, validator, updateUI, mapping, baseMapping, mimeType, title, heading, smaller, isFeatureType, showName, isSaving, children} = this.props;
+        let { ui, validator, updateUI, mapping, baseMapping, mimeType, title, heading, smaller, isFeatureType, showName, isSaving, children } = this.props;
 
-        const header = <Heading tag={ heading }
-                           strong={ true }
-                           margin="none"
-                           truncate={ true }
-                           uppercase={ false }>
-                           { title }
-                       </Heading>
+        const header = <Text
+            weight="bold"
+            truncate={true}
+            size={smaller ? "medium" : "large"}>
+            {title}
+        </Text>
 
-        return (<Article align="center" pad={ { horizontal: smaller ? 'medium' : 'small' } } primary={ true }>
-                    <Form compact={ false }>
-                        <FormFields>
-                            <fieldset>
-                                <Header size={ smaller ? 'small' : 'large' } justify="start" pad={ { horizontal: 'none', vertical: smaller ? 'none' : 'medium' } }>
-                                    { isFeatureType && mimeType !== 'general' ? header : <CheckboxUi name="enabled"
-                                                                                             checked={ ui.enabled && baseMapping.enabled }
-                                                                                             disabled={ !baseMapping.enabled }
-                                                                                             toggle={ true }
-                                                                                             reverse={ false }
-                                                                                             smaller={ smaller }
-                                                                                             label={ header }
-                                                                                             onChange={ updateUI }
-                                                                                             onDebounce={ this.save } /> }
-                                </Header>
-                                <Collapsible active={ ui.enabled && baseMapping.enabled }>
-                                    { showName && <FormField label="Name" error={ validator.messages.name }>
-                                                      <TextInputUi name="name"
-                                                          value={ ui.name }
-                                                          placeHolder={ baseMapping.name }
-                                                          onChange={ updateUI }
-                                                          onDebounce={ this.save } />
-                                                  </FormField> }
-                                    { React.Children.map(children,
-                                          (child) => {
-                                              //console.log(child);
-                                              return child ? React.cloneElement(child, {}, React.cloneElement(React.Children.only(child.props.children), {
-                                                  onDebounce: this.save
-                                              })) : child
-                                          }
-                                      ) }
-                                </Collapsible>
-                            </fieldset>
-                        </FormFields>
-                    </Form>
-                </Article>
+        return (<Box align="start" fill={true}>
+            <Header size={smaller ? 'small' : 'large'} justify="start" pad={{ horizontal: 'xsmall', vertical: smaller ? 'none' : 'medium' }}>
+                {isFeatureType && mimeType !== 'general' ? header : <CheckboxUi name="enabled"
+                    checked={ui.enabled && baseMapping.enabled}
+                    disabled={!baseMapping.enabled}
+                    toggle={true}
+                    reverse={false}
+                    smaller={smaller}
+                    label={header}
+                    onChange={updateUI}
+                    onDebounce={this.save} />}
+            </Header>
+            <StyledCollapsible open={ui.enabled && baseMapping.enabled}>
+                {showName && <FormField label="Name" error={validator.messages.name}>
+                    <TextInputUi name="name"
+                        value={ui.name}
+                        placeHolder={baseMapping.name}
+                        onChange={updateUI}
+                        onDebounce={this.save} />
+                </FormField>}
+                {React.Children.map(children,
+                    (child) => {
+                        //console.log(child);
+                        return child ? React.cloneElement(child, {}, React.cloneElement(React.Children.only(child.props.children), {
+                            onDebounce: this.save
+                        })) : child
+                    }
+                )}
+            </StyledCollapsible>
+        </Box>
         );
     }
 }
@@ -160,7 +148,7 @@ MappingEdit.propTypes = {
 };
 
 MappingEdit.defaultProps = {
-    heading: 'h4',
+    heading: 'h5',
     smaller: true,
     baseMapping: {
         enabled: true
