@@ -123,7 +123,7 @@ export default class FeatureTypeEdit extends PureComponent {
             ? <Badge title="Used for spatial filters">
                 <FilterIcon size="list" color="light-1" />
             </Badge>
-            : /*mapping.filterable && mapping.type === 'TEMPORAL'
+            : mapping.filterable && mapping.type === 'TEMPORAL'
                 ? <Badge title="Used for time filters">
                     <FilterIcon size="list" color="light-1" />
                 </Badge>
@@ -131,7 +131,7 @@ export default class FeatureTypeEdit extends PureComponent {
                     ? <Badge title="Usable in filters">
                         <FilterIcon size="list" color="light-1" />
                     </Badge>
-                    :*/ null;
+                    : null;
     }
 
     _getTypeIcon(type) {
@@ -270,10 +270,6 @@ export default class FeatureTypeEdit extends PureComponent {
 
         return (
             (service && featureType) &&
-            /*<Split flex="left"
-                separator={true}
-                priority="left"
-        onResponsive={this._onResponsive}>*/
             <Box fill={true}>
                 <Header border={{ side: 'bottom', size: 'small', color: 'light-4' }}
                     justify="between"
@@ -294,11 +290,11 @@ export default class FeatureTypeEdit extends PureComponent {
                             <FeatureTypeEditExtent key={featureType.id} featureType={featureType} onChange={this._onFeatureTypeChange} />
                         </Box>
                     </Tab>
-                    {/*tilesEnabled && <Tab title='Tiles'>
+                    {tilesEnabled && <Tab title='Tiles'>
                         <Box fill={true} overflow={{ vertical: 'auto' }}>
                             <FeatureTypeEditTiles featureType={featureType} onChange={this._onFeatureTypeChange} />
                         </Box>
-        </Tab>*/}
+                    </Tab>}
                     <Tab title='Mapping'>
                         {properties && <Box direction="row" fill={true}>
                             <Box fill="vertical" basis="1/2" overflow={{ vertical: 'auto' }}>
@@ -326,21 +322,7 @@ export default class FeatureTypeEdit extends PureComponent {
                         </Box>
                                 </Tab>*/}
                 </Tabs >
-
-                {/*(localSelectedProperty && mappings && mappings[localSelectedProperty]) ?
-                    <PropertyEdit title={this._beautify(mappings[localSelectedProperty].qn)}
-                        qn={mappings[localSelectedProperty].qn}
-                        mappings={cleanMapping}
-                        onChange={this._onFeatureTypeChange}
-                        isFeatureType={localSelectedProperty === featureType.id}
-                        isSaving={queryPending}
-                        getTypedComponent={getTypedComponent} />
-                    :
-                    <Box fill='vertical' size="large" background="light-2" />
-                */}
             </Box >
-            /*</Split>*/
         );
     }
 }
-

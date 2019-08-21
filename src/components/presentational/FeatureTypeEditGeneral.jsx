@@ -51,7 +51,6 @@ export default class FeatureTypeEditGeneral extends Component {
 
     _save = () => {
         const { ui, onChange } = this.props;
-
         onChange(ui);
     }
 
