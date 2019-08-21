@@ -320,11 +320,11 @@ export default class FeatureTypeEdit extends PureComponent {
                             {mappingError}
                         </Box>}
                     </Tab>
-                    <Tab title='Layer'>
+                    {/*<Tab title='Layer'>
                         <Box fill={true} overflow={{ vertical: 'auto' }}>
                             <FeatureTypeEditGsfs featureType={featureType} gsfsExt={gsfsExt(featureType)} serviceId={service.id} onChange={this._onFeatureTypeChange} />
                         </Box>
-                    </Tab>
+                                </Tab>*/}
                 </Tabs >
 
                 {/*(localSelectedProperty && mappings && mappings[localSelectedProperty]) ?

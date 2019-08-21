@@ -127,14 +127,14 @@ export default class FeatureTypeEditBBox extends Component {
                     <Box pad={{ right: 'medium' }}>
                         <Text weight='bold'>Spatial extent</Text>
                     </Box>
-                    {/*<Box>
+                    <Box>
                         <CheckboxUi name='computed'
                             label='computed'
                             checked={ui.computed}
                             onChange={updateUI}
                             onDebounce={this._save}
                             toggle={true} />
-                    </Box>*/}
+                    </Box>
                 </Box>
                 {!ui.computed && <Box>
                     <FormField label="X coordinate lower left corner" error={validator.messages.lowerLeftX}>

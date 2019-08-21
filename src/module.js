@@ -11,7 +11,6 @@ import FeatureTypes from './components/container/FeatureTypes'
 import ServiceAddCatalog from './components/container/ServiceAddCatalog'
 import MappingEdit from './components/presentational/MappingEdit'
 import ServiceEditWfsSettings from './components/presentational/ServiceEditWfsSettings';
-import ServiceEditGsfs from './components/presentational/ServiceEditGsfs';
 
 export default {
     serviceTypes: ['WFS3'],
@@ -50,8 +49,7 @@ export default {
     extendableComponents: {
         ServiceEdit: {
             'Data Provider': ServiceEditWfsSettings,
-            'Feature Types': FeatureTypes,
-            'FeatureServer': ServiceEditGsfs
+            'Feature Types': FeatureTypes
         }
     },
     serviceMenu: [{

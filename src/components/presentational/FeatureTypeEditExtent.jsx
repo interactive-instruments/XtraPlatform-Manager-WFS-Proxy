@@ -80,7 +80,7 @@ export default class FeatureTypeEditGeneral extends Component {
 
                 <FeatureTypeEditBBox featureType={featureType} onChange={this.props.onChange} />
 
-                {/*<Box flex={false} pad={{ bottom: 'xlarge' }}>
+                <Box flex={false} pad={{ bottom: 'xlarge' }}>
                     <Box pad={{ top: 'large', bottom: 'xsmall' }}>
                         <Text weight='bold'>Temporal extent</Text>
                     </Box>
@@ -100,7 +100,7 @@ export default class FeatureTypeEditGeneral extends Component {
                             onDebounce={this._save} />
 
                     </FormField>
-        </Box>*/}
+                </Box>
             </Box>
 
         );
