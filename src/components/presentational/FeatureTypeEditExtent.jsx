@@ -21,95 +21,36 @@
 
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import ui from 'redux-ui';
-import moment from 'moment';
 
-import { Box, Text, FormField } from 'grommet';
-
-import TextInputUi from 'xtraplatform-manager/src/components/common/TextInputUi';
-import uiValidator, { forbiddenChars } from 'xtraplatform-manager/src/components/common/ui-validator';
+import { Box } from 'grommet';
 
 
-import FeatureTypeEditBBox from './FeatureTypeEditBBox';
+import FeatureTypeEditExtentSpatial from './FeatureTypeEditExtentSpatial';
+import FeatureTypeEditExtentTemporal from './FeatureTypeEditExtentTemporal';
 
-const validateTemporalBoundary = (isStart) => (value, ui) => {
-    const m = !isStart && value === '' ? moment.utc() : moment.utc(value);
-    if (!m.isValid()) {
-        return "not a valid date"
-    }
-    const m2 = moment.utc(isStart ? ui.end : ui.start);
-    return isStart
-        ? (m.isAfter(m2) ? 'not before or equal to end' : null)
-        : (m.isBefore(m2) ? 'not after or equal to start' : null)
-}
 
-@ui({
-    //key: 'FeatureTypeEditGeneral',
-    state: {
-        start: (props) => props.featureType.extent.temporal ? moment.utc(props.featureType.extent.temporal.start).format() : moment.utc().format(),
-        end: (props) => props.featureType.extent.temporal ? props.featureType.extent.temporal.end === 0 ? '' : moment.utc(props.featureType.extent.temporal.end).format() : ''
-    }
-})
-
-@uiValidator({
-    start: validateTemporalBoundary(true),
-    end: validateTemporalBoundary(false)
-}, true)
-
-export default class FeatureTypeEditGeneral extends Component {
-
-    _save = () => {
-        const { ui, validator, onChange } = this.props;
-        if (validator.valid) {
-            onChange({
-                extent: {
-                    temporal: {
-                        start: moment.utc(ui.start).valueOf(),
-                        end: ui.end === '' ? 0 : moment.utc(ui.end).valueOf()
-                    }
-                }
-            });
-        }
-    }
+export default class FeatureTypeEditExtent extends Component {
 
     render() {
-        const { featureType, ui, updateUI, onChange, validator } = this.props;
+        const { extent: { spatial = {}, temporal = {}, spatialComputed }, showSpatialComputed = true, showTemporal = true, onChange } = this.props;
 
         return (
-            featureType && <Box pad={{ horizontal: 'small', vertical: 'medium' }} fill={true}>
+            <Box pad={{ horizontal: 'small', vertical: 'medium' }} fill={true}>
 
-                <FeatureTypeEditBBox featureType={featureType} onChange={this.props.onChange} />
+                <FeatureTypeEditExtentSpatial showSpatialComputed={showSpatialComputed} spatialComputed={spatialComputed} xmin={spatial.xmin} ymin={spatial.ymin} xmax={spatial.xmax} ymax={spatial.ymax} onChange={onChange} />
 
-                <Box flex={false} pad={{ bottom: 'xlarge' }}>
-                    <Box pad={{ top: 'large', bottom: 'xsmall' }}>
-                        <Text weight='bold'>Temporal extent</Text>
-                    </Box>
+                {showTemporal && <FeatureTypeEditExtentTemporal start={temporal.start} end={temporal.end} onChange={onChange} />}
 
-                    <FormField label="Start of temporal extent" error={validator.messages.start}>
-                        <TextInputUi name="start"
-                            value={ui.start}
-                            onChange={updateUI}
-                            onDebounce={this._save} />
-                    </FormField>
 
-                    <FormField label="End of temporal extent" error={validator.messages.end}>
-                        <TextInputUi name="end"
-                            placeHolder="now"
-                            value={ui.end}
-                            onChange={updateUI}
-                            onDebounce={this._save} />
-
-                    </FormField>
-                </Box>
             </Box>
 
         );
     }
 }
 
-FeatureTypeEditGeneral.propTypes = {
+FeatureTypeEditExtent.propTypes = {
     onChange: PropTypes.func.isRequired
 };
 
-FeatureTypeEditGeneral.defaultProps = {
+FeatureTypeEditExtent.defaultProps = {
 };

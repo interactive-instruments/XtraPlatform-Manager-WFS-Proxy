@@ -73,14 +73,11 @@ const validateSpatialBoundary = (isX, isMin) => (value, ui) => {
 
 @ui({
     state: {
-        lowerLeftX: (props) => props.featureType.extent.spatialComputed ? "" : props.featureType.extent.spatial.xmin,
-        lowerLeftY: (props) => props.featureType.extent.spatialComputed ? "" : props.featureType.extent.spatial.ymin,
-        upperRightX: (props) => props.featureType.extent.spatialComputed ? "" : props.featureType.extent.spatial.xmax,
-        upperRightY: (props) => props.featureType.extent.spatialComputed ? "" : props.featureType.extent.spatial.ymax,
-        temporal: (props) => props.featureType.extent.temporal,
-        temporalStart: (props) => props.featureType.extent.temporal.start,
-        temporalEnd: (props) => props.featureType.extent.temporal.end,
-        computed: (props) => props.featureType.extent.spatialComputed
+        lowerLeftX: (props) => props.spatialComputed ? "" : props.xmin,
+        lowerLeftY: (props) => props.spatialComputed ? "" : props.ymin,
+        upperRightX: (props) => props.spatialComputed ? "" : props.xmax,
+        upperRightY: (props) => props.spatialComputed ? "" : props.ymax,
+        computed: (props) => props.spatialComputed
 
     }
 })
@@ -92,17 +89,13 @@ const validateSpatialBoundary = (isX, isMin) => (value, ui) => {
     upperRightY: validateSpatialBoundary(false, false)
 }, true)
 
-export default class FeatureTypeEditBBox extends Component {
+export default class FeatureTypeEditExtentSpatial extends Component {
 
     _save = () => {
         const { ui, validator, onChange } = this.props;
         if (validator.valid) {
             onChange({
                 extent: {
-                    temporal: {
-                        start: ui.temporalStart,
-                        end: ui.temporalEnd
-                    },
                     spatial: {
                         xmin: ui.lowerLeftX,
                         ymin: ui.lowerLeftY,
@@ -115,26 +108,23 @@ export default class FeatureTypeEditBBox extends Component {
         }
     }
 
-
-
-
     render() {
-        const { featureType, ui, updateUI, onChange, validator } = this.props;
+        const { ui, updateUI, validator, showSpatialComputed } = this.props;
 
         return (
-            featureType && <Box flex={false}>
+            <Box flex={false}>
                 <Box direction="row" justify='start' pad={{ bottom: 'small' }}>
                     <Box pad={{ right: 'medium' }}>
                         <Text weight='bold'>Spatial extent</Text>
                     </Box>
-                    <Box>
+                    {showSpatialComputed && <Box>
                         <CheckboxUi name='computed'
                             label='computed'
                             checked={ui.computed}
                             onChange={updateUI}
                             onDebounce={this._save}
                             toggle={true} />
-                    </Box>
+                    </Box>}
                 </Box>
                 {!ui.computed && <Box>
                     <FormField label="X coordinate lower left corner" error={validator.messages.lowerLeftX}>
@@ -175,9 +165,9 @@ export default class FeatureTypeEditBBox extends Component {
     }
 }
 
-FeatureTypeEditBBox.propTypes = {
+FeatureTypeEditExtentSpatial.propTypes = {
     onChange: PropTypes.func.isRequired
 };
 
-FeatureTypeEditBBox.defaultProps = {
+FeatureTypeEditExtentSpatial.defaultProps = {
 };

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ui from 'redux-ui';
 
-import { Form, FormField, Box } from 'grommet';
+import { Form, FormField, TextInput, Box } from 'grommet';
 
 import CheckboxUi from 'xtraplatform-manager/src/components/common/CheckboxUi';
 
@@ -30,10 +30,10 @@ class ServiceEditWfsSettings extends Component {
     }
 
     render() {
-        const { ui, updateUI } = this.props;
+        const { ui, updateUI, url } = this.props;
 
         return (
-            <Box pad={{ horizontal: 'small', vertical: 'medium' }} fill="horizontal">
+            <Box pad={{ horizontal: 'small', vertical: 'medium' }} gap="small" fill="horizontal">
                 <CheckboxUi name="forceLongitudeFirst"
                     label={"Reversed axis order for source CRS" + (ui.code ? ` (EPSG:${ui.code})` : "")}
                     checked={ui.forceLongitudeFirst}
@@ -41,6 +41,11 @@ class ServiceEditWfsSettings extends Component {
                     reverse={false}
                     onChange={updateUI}
                     onDebounce={this._save} />
+                <Form>
+                    <FormField label="Url">
+                        <TextInput name="url" value={url} readOnly={true} />
+                    </FormField>
+                </Form>
             </Box>
         );
     }
@@ -54,5 +59,5 @@ ServiceEditWfsSettings.defaultProps = {
 };
 
 export default props => (props.featureProvider && props.featureProvider.nativeCrs)
-    ? <ServiceEditWfsSettings code={props.featureProvider.nativeCrs.code} forceLongitudeFirst={props.featureProvider.nativeCrs.forceLongitudeFirst} mappingStatus={props.featureProvider.mappingStatus} onChange={props.onChange} />
+    ? <ServiceEditWfsSettings code={props.featureProvider.nativeCrs.code} forceLongitudeFirst={props.featureProvider.nativeCrs.forceLongitudeFirst} mappingStatus={props.featureProvider.mappingStatus} url={props.featureProvider.connectionInfo.uri} onChange={props.onChange} />
     : null

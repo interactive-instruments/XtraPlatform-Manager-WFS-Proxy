@@ -32,7 +32,7 @@ import Toast from '../common/Toast';
 import { actions } from 'xtraplatform-manager/src/reducers/service';
 
 import FeatureTypeEdit from '../presentational/FeatureTypeEdit';
-import { getService, getFeatureType, getMappingsForFeatureType, getSelectedService, getSelectedFeatureType, getSelectedProperty } from '../../reducers/service'
+import { getService, getFeatureType, getFeatureTypeIndex, getMappingsForFeatureType, getSelectedService, getSelectedFeatureType, getSelectedProperty, getToken } from '../../reducers/service'
 import ServiceApi from '../../apis/ServiceApiWfsProxy'
 
 @connect(
@@ -44,6 +44,8 @@ import ServiceApi from '../../apis/ServiceApiWfsProxy'
             mappings: getMappingsForFeatureType(state),
             selectedService: getSelectedService(state),
             selectedFeatureType: getSelectedFeatureType(state),
+            featureTypeIndex: getFeatureTypeIndex(state),
+            token: getToken(state),
             selectedProperty: getSelectedProperty(state) ? getSelectedProperty(state) : getFeatureType(state) ? getFeatureType(state).id : null,
             reloadPending: Object.values(state.queries).some(query => !query.isMutation && query.isPending),
             queryPending: Object.values(state.queries).some(query => query.isMutation && query.isPending),

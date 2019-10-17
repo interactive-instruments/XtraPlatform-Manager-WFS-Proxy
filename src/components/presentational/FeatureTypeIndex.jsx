@@ -33,15 +33,15 @@ const ListPlaceholder = () => <ListItem>Loading...</ListItem>;
 export default class FeatureTypeIndex extends PureComponent {
 
     render() {
-        const { featureTypes, featureTypeId, onSelect, compact, serviceUrl, navToggle, reloadPending, queryPending, queryFinished } = this.props;
+        const { featureTypes, featureTypeId, onSelect, compact, serviceUrl, serviceId, navToggle, reloadPending, queryPending, queryFinished } = this.props;
 
         let fts = <ListPlaceholder />
         let navControl;
         let label;
         let icon;
         if (compact) {
-            navControl = <Anchor onClick={navToggle.bind(null, true)} icon={<MenuIcon />} />;
-            label = <Anchor path={{ pathname: serviceUrl + '?tab=Feature%20Types' }} label={<Text truncate={true} size='large' weight={500}>Feature Types</Text>} />
+            navControl = <Anchor onClick={navToggle.bind(null, true)} icon={<MenuIcon />} title="Show menu" />;
+            label = <span><Anchor path={{ pathname: serviceUrl + '?tab=Feature%20Types' }} label={<Text truncate={true} size='large' weight={500}>{serviceId}</Text>} title="Go back to service" /><Text size='large' weight={500}> -> </Text><Text truncate={true} size='large' weight={500}>Feature Types</Text></span>
             icon = <LoadSaveIndicator loading={reloadPending || queryPending} success={queryFinished} />
         }
 

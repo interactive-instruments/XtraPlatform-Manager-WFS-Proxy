@@ -108,7 +108,7 @@ export default class FeatureTypes extends Component {
         if (featureType) {
             return (
                 <Box fill={true} direction='row' align='end'>
-                    <FeatureTypeIndex featureTypes={featureTypes} featureTypeId={featureType.id} reloadPending={reloadPending} queryPending={queryPending} queryFinished={queryFinished} onSelect={this._select} compact={true} serviceUrl={'/services/' + service.id} navToggle={navToggle} />
+                    <FeatureTypeIndex featureTypes={featureTypes} featureTypeId={featureType.id} reloadPending={reloadPending} queryPending={queryPending} queryFinished={queryFinished} onSelect={this._select} compact={true} serviceUrl={'/services/' + service.id} serviceId={service.id} navToggle={navToggle} />
                     <FeatureType {...this.props} />
                 </Box>
             );
