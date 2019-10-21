@@ -5,25 +5,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { normalizeServices, normalizeServiceConfigs } from 'xtraplatform-manager/src/apis/ServiceNormalizer'
+import { normalizeServiceConfigs } from 'xtraplatform-manager/src/apis/ServiceNormalizer'
 import ServiceApi from 'xtraplatform-manager/src/apis/ServiceApi'
+import { secureQuery } from 'xtraplatform-manager/src/apis/AuthApi'
+import { DEFAULT_OPTIONS } from 'xtraplatform-manager/src/apis/ServiceApi'
 
 
 const ServiceApiWfsProxy = {
-    getServiceConfigQuery: function (id, reload) {
-        return {
-            url: `${ServiceApi.URL}${id}/config/`,
-            transform: (serviceConfig) => normalizeServiceConfigs([serviceConfig]).entities,
-            update: {
-                serviceConfigs: (prev, next) => next,
-                featureTypes: (prev, next) => next,
-                mappings: (prev, next) => next
-            },
-            force: reload === true
-        }
-    },
 
-    updateFeatureTypeQuery: function (id, ftid, ftqn, change) {
+    updateFeatureTypeQuery: function (id, ftid, ftqn, change, options = DEFAULT_OPTIONS) {
         var body;
         if (change.mappings) {
             body = {
@@ -43,9 +33,11 @@ const ServiceApiWfsProxy = {
                 }
             }
         }
-        console.log(body);
+        if (process.env.NODE_ENV !== 'production') {
+            console.log(body);
+        }
 
-        return {
+        const query = {
             url: `${ServiceApi.URL}${id}/`,
             body: JSON.stringify(body),
             options: {
@@ -74,10 +66,12 @@ const ServiceApiWfsProxy = {
                 }
             }
         }
+
+        return options.secured ? secureQuery(query) : query
     },
 
-    parseCatalogQuery: function (url) {
-        return {
+    parseCatalogQuery: function (url, options = DEFAULT_OPTIONS) {
+        const query = {
             url: `../rest/catalog/`,
             transform: (catalog) => ({
                 catalog: catalog
@@ -93,6 +87,8 @@ const ServiceApiWfsProxy = {
             },
             force: true
         }
+
+        return options.secured ? secureQuery(query) : query
     }
 }
 

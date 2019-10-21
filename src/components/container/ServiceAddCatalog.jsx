@@ -124,7 +124,9 @@ export default class ServiceAddCatalog extends Component {
             loaded2: true
         })
         if (this.query) {
-            console.log('CANCEL QUERY', this.query)
+            if (process.env.NODE_ENV !== 'production') {
+                console.log('CANCEL QUERY', this.query)
+            }
             dispatch(cancelQuery(this.query));
         }
     }
@@ -177,8 +179,6 @@ export default class ServiceAddCatalog extends Component {
             } else {
                 req = req.then(result => {
                     this._updateCatalogMeter(result);
-                    if (result.status === 200)
-                        setTimeout(() => dispatch(requestAsync(ServiceApi.getServiceQuery(lastService.id))), 1000);
                     if (!this._cancel) {
                         return dispatch(mutateAsync(query))
                     }
@@ -192,8 +192,6 @@ export default class ServiceAddCatalog extends Component {
         if (req) {
             req = req.then(result => {
                 this._updateCatalogMeter(result);
-                if (result.status === 200)
-                    setTimeout(() => dispatch(requestAsync(ServiceApi.getServiceQuery(service2.id))), 1000);
 
                 updateUI({
                     loading2: false,

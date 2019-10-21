@@ -29,7 +29,9 @@ export default class PropertyEdit extends Component {
 
     _onMappingChange = (change) => {
         const { qn, onChange, mappings } = this.props;
-        console.log(qn, change);
+        if (process.env.NODE_ENV !== 'production') {
+            console.log(qn, change);
+        }
         onChange({
             mappings: {
                 [qn]: {
@@ -53,7 +55,11 @@ export default class PropertyEdit extends Component {
                             baseMapping = mappings[mimeType];
                         }
                         const MappingEdit = getTypedComponent('MappingEdit', mimeType)
-                        console.log('ME', mimeType, MappingEdit)
+
+                        if (process.env.NODE_ENV !== 'production') {
+                            console.log('ME', mimeType, MappingEdit)
+                        }
+
                         return MappingEdit && <Box flex={false} key={mimeType} pad={{ bottom: 'medium' }} fill="horizontal">
                             <MappingEdit key={mimeType}
                                 title={title}

@@ -39,9 +39,12 @@ import { getService, getFeatureTypes, getFeatureType } from '../../reducers/serv
 import { actions } from 'xtraplatform-manager/src/reducers/service';
 import { actions as navActions } from 'xtraplatform-manager/src/reducers/app'
 import ServiceApi from 'xtraplatform-manager/src/apis/ServiceApi'
+import { withAppConfig } from 'xtraplatform-manager/src/app-context'
+
+@withAppConfig()
 
 @connectRequest(
-    (props) => props.urlParams && ServiceApi.getServiceConfigQuery(props.urlParams.id)
+    (props) => props.urlParams && ServiceApi.getServiceQuery(props.urlParams.id, { secured: props.appConfig.secured })
 )
 
 @connect(
@@ -56,20 +59,21 @@ import ServiceApi from 'xtraplatform-manager/src/apis/ServiceApi'
             queryFinished: Object.values(state.queries).some(query => query.isMutation && query.isFinished && (Date.now() - query.lastUpdated < 1500)) && Object.values(state.queries).every(query => /*!query.isMutation || */query.isFinished)
         }
     },
-    (dispatch) => {
+    (dispatch, props) => {
         return {
             ...bindActionCreators(actions, dispatch),
             ...bindActionCreators(navActions, dispatch),
             dispatch,
             updateService: (service) => {
-                // TODO: return updated service on POST request
-                dispatch(mutateAsync(ServiceApi.updateServiceQuery(service.id, service)))
+                dispatch(mutateAsync(ServiceApi.updateServiceQuery(service.id, service, { secured: props.appConfig.secured })))
                     .then((result) => {
                         if (result.status === 200) {
-                            //dispatch(requestAsync(ServiceApi.getServiceConfigQuery(service.id)));
+
                         } else {
-                            console.log('ERR', result)
-                            const error = result.body && result.body.error || {}
+                            if (process.env.NODE_ENV !== 'production') {
+                                console.log('ERR', result)
+                                const error = result.body && result.body.error || {}
+                            }
                         }
                     })
             }
@@ -92,7 +96,9 @@ export default class FeatureTypes extends Component {
         const { service, dispatch } = this.props;
         return () => {
             var sid = service.id;
-            console.log('selected: ', sid, fid);
+            if (process.env.NODE_ENV !== 'production') {
+                console.log('selected: ', sid, fid);
+            }
             // TODO: save in store and push via action, see ferret
             // TODO: remove when property is url param
             //this.props.dispatch(actions.selectFeatureType(fid));
@@ -108,7 +114,7 @@ export default class FeatureTypes extends Component {
         if (featureType) {
             return (
                 <Box fill={true} direction='row' align='end'>
-                    <FeatureTypeIndex featureTypes={featureTypes} featureTypeId={featureType.id} reloadPending={reloadPending} queryPending={queryPending} queryFinished={queryFinished} onSelect={this._select} compact={true} serviceUrl={'/services/' + service.id} serviceId={service.id} navToggle={navToggle} />
+                    <FeatureTypeIndex featureTypes={featureTypes} featureTypeId={featureType.id} reloadPending={reloadPending} queryPending={queryPending} queryFinished={queryFinished} onSelect={this._select} compact={true} serviceUrl={'/services/' + service.id} serviceId={service.id} serviceLabel={service.label} navToggle={navToggle} />
                     <FeatureType {...this.props} />
                 </Box>
             );

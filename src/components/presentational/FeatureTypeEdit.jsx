@@ -23,50 +23,15 @@ import React, { PureComponent } from 'react';
 
 import Header from 'xtraplatform-manager/src/components/common/Header';
 import { Text, Box, Tabs, Tab } from 'grommet';
-
-import { shallowDiffers } from 'xtraplatform-manager/src/util';
-
-/*@ui({
-    //key: 'FeatureTypeShow',
-    state: {
-        //featureType: (props, state) => props.featureType || {},
-        //let {id, index, qn, ...rest} = mappings[localSelectedProperty];
-        //mappings: (props) => (props.selectedProperty && props.mappings && props.mappings[props.selectedProperty]) ? props.mappings[props.selectedProperty] : null
-    }
-})*/
-
-const tilesExt = item => item.capabilities && item.capabilities.find(ext => ext.extensionType === 'TILES')
+import { Analytics } from 'grommet-icons'
 
 
 export default class FeatureTypeEdit extends PureComponent {
-
-    /*shouldComponentUpdate(nextProps) {
-        //console.log('CHK FT', this.props.featureType, nextProps.featureType)
-        if (shallowDiffers(this.props.featureType, nextProps.featureType, false, ['mappings'])
-            || (this.props.featureType.mappings && this.props.featureType.mappings.toString() !== nextProps.featureType.mappings.toString())
-            || this.props.selectedProperty !== nextProps.selectedProperty
-            //|| this.props.queryPending !== nextProps.queryPending
-            //|| this.props.queryFinished !== nextProps.queryFinished
-            || shallowDiffers(this.props.mappings[this.props.selectedProperty], nextProps.mappings[nextProps.selectedProperty])
-            //TODO|| shallowDiffers(this.props.service.serviceProperties.mappingStatus, nextProps.service.serviceProperties.mappingStatus)
-        ) {
-            console.log('UP FT', this.props.featureType, nextProps.featureType)
-            return true;
-        }
-
-        return false;
-    }*/
 
     _onSelect = (selected) => {
         const { selectProperty } = this.props;
 
         selectProperty(selected);
-    }
-
-    _save = () => {
-        const { ui, service, featureType, updateFeatureType } = this.props;
-        //console.log('SAVE', service.id, featureType.id, ui)
-        updateFeatureType(service.id, featureType.id, featureType.qn, ui);
     }
 
     _onFeatureTypeChange = (change) => {
@@ -78,7 +43,9 @@ export default class FeatureTypeEdit extends PureComponent {
 
     _enableMapping = () => {
         const { service, updateService } = this.props;
-        console.log('_enableMapping')
+        if (process.env.NODE_ENV !== 'production') {
+            console.log('_enableMapping')
+        }
         updateService({
             id: service.id,
             serviceProperties: {
@@ -107,8 +74,6 @@ export default class FeatureTypeEdit extends PureComponent {
 
         const FeatureTypeActions = getTypedComponent('FeatureTypeActions', 'default')
 
-        const tilesEnabled = tilesExt(featureType) && tilesExt(featureType).enabled;
-
         const editTabs = getExtendableComponents('FeatureTypeEdit');
         const selectedTab = urlQuery && urlQuery.tab && Math.max(Object.keys(editTabs).findIndex(label => label === urlQuery.tab), 0);
 
@@ -120,7 +85,8 @@ export default class FeatureTypeEdit extends PureComponent {
                     size="large">
                     <Box direction='row' gap='small' align='center'>
                         {/*<Anchor icon={<LinkPreviousIcon />} path="/services" a11yTitle="Return" />*/}
-                        <Text size='large' weight={500} truncate={true}>{featureType.label}</Text>
+                        <Analytics />
+                        <Text size='large' weight={500} truncate={true} title={featureType.label}>{featureType.label}</Text>
                     </Box>
                     <FeatureTypeActions service={service} id={featureType.origId} index={featureTypeIndex} token={token} />
                 </Header>

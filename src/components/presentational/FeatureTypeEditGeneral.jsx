@@ -62,7 +62,7 @@ export default class FeatureTypeEditGeneral extends Component {
         return (
             <Box pad={{ vertical: 'medium', horizontal: 'small' }} fill="horizontal">
                 <FormField label="Id">
-                    <TextInput name="name" value={id} disabled={true} />
+                    <TextInput name="name" value={id} readOnly={true} />
                 </FormField>
                 <FormField label="Display name">
                     <TextInputUi name="label"

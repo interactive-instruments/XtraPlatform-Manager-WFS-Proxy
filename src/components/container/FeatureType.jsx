@@ -34,6 +34,9 @@ import { actions } from 'xtraplatform-manager/src/reducers/service';
 import FeatureTypeEdit from '../presentational/FeatureTypeEdit';
 import { getService, getFeatureType, getFeatureTypeIndex, getMappingsForFeatureType, getSelectedService, getSelectedFeatureType, getSelectedProperty, getToken } from '../../reducers/service'
 import ServiceApi from '../../apis/ServiceApiWfsProxy'
+import { withAppConfig } from 'xtraplatform-manager/src/app-context'
+
+@withAppConfig()
 
 @connect(
     (state, props) => {
@@ -52,41 +55,34 @@ import ServiceApi from '../../apis/ServiceApiWfsProxy'
             queryFinished: Object.values(state.queries).some(query => query.isMutation && query.isFinished && (Date.now() - query.lastUpdated < 1500)) && Object.values(state.queries).every(query => /*!query.isMutation || */query.isFinished)
         }
     },
-    (dispatch) => {
+    (dispatch, props) => {
         return {
             ...bindActionCreators(actions, dispatch),
             updateFeatureType: (id, ftid, ftqn, change) => {
-
-                dispatch(mutateAsync(ServiceApi.updateFeatureTypeQuery(id, ftid, ftqn, change)))
+                console.log('PROPS', props)
+                dispatch(mutateAsync(ServiceApi.updateFeatureTypeQuery(id, ftid, ftqn, change, { secured: props.appConfig.secured })))
                     .then((result) => {
                         if (result.status === 200) {
-                            //dispatch(requestAsync(ServiceApi.getServiceConfigQuery(id, true)));
+
                         } else {
-                            console.log('ERR', result)
-                            const error = result.body && result.body.error || {}
-
-                            // TODO: rollback ui
-
-                            /*dispatch(actions.addFailed({
-                                ...service,
-                                ...error,
-                                text: 'Failed to add service with id ' + service.id,
-                                status: 'critical'
-                            }))*/
+                            if (process.env.NODE_ENV !== 'production') {
+                                console.log('ERR', result)
+                                const error = result.body && result.body.error || {}
+                            }
                         }
                     })
-
-                //dispatch(push('/services'))
             },
             updateService: (service) => {
-                // TODO: return updated service on POST request
-                dispatch(mutateAsync(ServiceApi.updateServiceQuery(service)))
+                dispatch(mutateAsync(ServiceApi.updateServiceQuery(service, { secured: props.appConfig.secured })))
                     .then((result) => {
-                        dispatch(requestAsync(ServiceApi.getServiceConfigQuery(service.id, true)));
+                        // this is used to enable the mapping for services added via catalog
+                        // so we need wait/reload until hasBackgroundTask is set, then the auto-update takes over
+                        // is this sufficient?
+                        dispatch(requestAsync(ServiceApi.getServiceQuery(service.id, { forceReload: true, secured: props.appConfig.secured })));
                     })
             },
             reloadService: (service) => {
-                setTimeout(() => dispatch(requestAsync(ServiceApi.getServiceConfigQuery(service.id, true))), 1000);
+                setTimeout(() => dispatch(requestAsync(ServiceApi.getServiceQuery(service.id, { forceReload: true, secured: props.appConfig.secured }))), 1000);
             },
             goto: url => dispatch(push(url))
         }
@@ -105,17 +101,16 @@ export default class FeatureType extends Component {
         const { service, featureType, reloadPending, queryFinished, reloadService } = this.props;
         //console.log('SEL', this.props.selectedProperty, featureType)
 
-        //TODO
-        /*if (!reloadPending && service && service.serviceProperties.mappingStatus.loading) {
-            reloadService(service);
-        }*/
-
         const updateService = !reloadPending && service && service.featureProvider && service.featureProvider.mappingStatus && service.featureProvider.mappingStatus.enabled && !service.featureProvider.mappingStatus.supported && !service.featureProvider.mappingStatus.errorMessage;
 
         if (!this.timer && this.counter < 30 && updateService) {
-            console.log('UP');
+            if (process.env.NODE_ENV !== 'production') {
+                console.log('UP');
+            }
             this.timer = setTimeout(() => {
-                console.log('UPPED');
+                if (process.env.NODE_ENV !== 'production') {
+                    console.log('UPPED');
+                }
                 this.timer = null;
                 this.counter++;
                 reloadService(service);
@@ -123,17 +118,12 @@ export default class FeatureType extends Component {
         } else {
             this.counter = 0;
         }
-        //TODO: wrap with state and timeout
         return (
             (service && featureType) &&
             <Box fill={true}>
-                {/*<Toast show={queryFinished}></Toast>*/}
                 <FeatureTypeEdit {...this.props} />
             </Box>
         );
     }
 }
 
-/*<Toast status='ok' size="medium" duration={1500}>
-                    Saved!
-        </Toast>}*/
