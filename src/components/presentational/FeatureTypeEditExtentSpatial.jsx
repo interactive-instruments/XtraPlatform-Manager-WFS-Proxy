@@ -15,159 +15,179 @@
  *
  * This work was supported by the EU Interoperability Solutions for
  * European Public Administrations Programme (https://ec.europa.eu/isa2)
- * through the ELISE action (European Location Interoperability Solutions 
+ * through the ELISE action (European Location Interoperability Solutions
  * for e-Government).
  */
 
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import ui from 'redux-ui';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import ui from "redux-ui";
 
-import { Box, FormField, Text } from 'grommet';
+import { Box, FormField, Text } from "grommet";
 
-import TextInputUi from 'xtraplatform-manager/src/components/common/TextInputUi';
-import CheckboxUi from 'xtraplatform-manager/src/components/common/CheckboxUi';
-import uiValidator, { forbiddenChars } from 'xtraplatform-manager/src/components/common/ui-validator';
+import TextInputUi from "xtraplatform-manager/src/components/common/TextInputUi";
+import CheckboxUi from "xtraplatform-manager/src/components/common/CheckboxUi";
+import uiValidator, {
+  forbiddenChars,
+} from "xtraplatform-manager/src/components/common/ui-validator";
 
 const validateSpatialBoundary = (isX, isMin) => (value, ui) => {
-    if (value.toString().includes(','))
-        return "use \'.\' instead of \',\' as a decimal seperator"
+  if (value.toString().includes(","))
+    return "use '.' instead of ',' as a decimal seperator";
 
-    value = parseInt(value);
-    if (isX) {
-        if (value < -180 || value > 180) {
-            return "not a valid bbox"
-        }
+  value = parseFloat(value);
+  if (isX) {
+    if (value < -180 || value > 180) {
+      return "not a valid bbox";
     }
-    if (!isX) {
-        if (value < -90 || value > 90) {
-            return "not a valid bbox"
-        }
+  }
+  if (!isX) {
+    if (value < -90 || value > 90) {
+      return "not a valid bbox";
     }
-    if (isMin && isX) {
-        if (value >= ui.upperRightX) {
-            return "invalid, must be smaller then X coordinate upper right corner"
-        }
-
+  }
+  if (isMin && isX) {
+    if (value >= ui.upperRightX) {
+      return "invalid, must be smaller than X coordinate upper right corner";
     }
-    if (isMin && !isX) {
-        if (value >= ui.upperRightY) {
-            return "invalid, must be smaller then Y coordinate upper right corner"
-        }
+  }
+  if (isMin && !isX) {
+    if (value >= ui.upperRightY) {
+      return "invalid, must be smaller than Y coordinate upper right corner";
     }
-    if (!isMin && isX) {
-        if (value <= ui.lowerLeftX) {
-            return "invalid, must be greater then X coordinate lower left corner"
-        }
+  }
+  if (!isMin && isX) {
+    if (value <= ui.lowerLeftX) {
+      return "invalid, must be greater than X coordinate lower left corner";
     }
-    if (!isMin && !isX) {
-        if (value <= ui.lowerLeftY) {
-            return "invalid, must be greater then Y coordinate lower left corner"
-        }
+  }
+  if (!isMin && !isX) {
+    if (value <= ui.lowerLeftY) {
+      return "invalid, must be greater than Y coordinate lower left corner";
     }
-
-
-
-
-}
+  }
+};
 
 @ui({
-    state: {
-        lowerLeftX: (props) => props.spatialComputed ? "" : props.xmin,
-        lowerLeftY: (props) => props.spatialComputed ? "" : props.ymin,
-        upperRightX: (props) => props.spatialComputed ? "" : props.xmax,
-        upperRightY: (props) => props.spatialComputed ? "" : props.ymax,
-        computed: (props) => props.spatialComputed
-
-    }
+  state: {
+    lowerLeftX: (props) => (props.spatialComputed ? "" : props.xmin),
+    lowerLeftY: (props) => (props.spatialComputed ? "" : props.ymin),
+    upperRightX: (props) => (props.spatialComputed ? "" : props.xmax),
+    upperRightY: (props) => (props.spatialComputed ? "" : props.ymax),
+    computed: (props) => props.spatialComputed,
+  },
 })
-
-@uiValidator({
+@uiValidator(
+  {
     lowerLeftX: validateSpatialBoundary(true, true),
     lowerLeftY: validateSpatialBoundary(false, true),
     upperRightX: validateSpatialBoundary(true, false),
-    upperRightY: validateSpatialBoundary(false, false)
-}, true)
-
+    upperRightY: validateSpatialBoundary(false, false),
+  },
+  true
+)
 export default class FeatureTypeEditExtentSpatial extends Component {
-
-    _save = () => {
-        const { ui, validator, onChange } = this.props;
-        if (validator.valid) {
-            onChange({
-                extent: {
-                    spatial: {
-                        xmin: ui.lowerLeftX,
-                        ymin: ui.lowerLeftY,
-                        xmax: ui.upperRightX,
-                        ymax: ui.upperRightY
-                    },
-                    spatialComputed: ui.computed
-                }
-            });
-        }
+  _save = () => {
+    const { ui, validator, onChange } = this.props;
+    if (validator.valid) {
+      onChange({
+        extent: {
+          spatial: {
+            xmin: ui.lowerLeftX,
+            ymin: ui.lowerLeftY,
+            xmax: ui.upperRightX,
+            ymax: ui.upperRightY,
+          },
+          spatialComputed: ui.computed,
+        },
+      });
     }
+  };
 
-    render() {
-        const { ui, updateUI, validator, showSpatialComputed } = this.props;
+  render() {
+    const { ui, updateUI, validator, showSpatialComputed } = this.props;
 
-        return (
-            <Box flex={false}>
-                <Box direction="row" justify='start' pad={{ bottom: 'small' }}>
-                    <Box pad={{ right: 'medium' }}>
-                        <Text weight='bold'>Spatial extent</Text>
-                    </Box>
-                    {showSpatialComputed && <Box>
-                        <CheckboxUi name='computed'
-                            label='computed'
-                            checked={ui.computed}
-                            onChange={updateUI}
-                            onDebounce={this._save}
-                            toggle={true} />
-                    </Box>}
-                </Box>
-                {!ui.computed && <Box>
-                    <FormField label="X coordinate lower left corner" error={validator.messages.lowerLeftX}>
-                        <TextInputUi name="lowerLeftX"
-                            value={ui.lowerLeftX}
-                            placeHolder="Computed Values should not be changed"
-                            onChange={updateUI}
-                            onDebounce={this._save} />
-                    </FormField>
-
-                    <FormField label="Y coordinate lower left corner" error={validator.messages.lowerLeftY}>
-                        <TextInputUi name="lowerLeftY"
-                            value={ui.lowerLeftY}
-                            placeHolder="Computed Values should not be changed"
-                            onChange={updateUI}
-                            onDebounce={this._save} />
-                    </FormField>
-
-                    <FormField label="X coordinate upper right corner" error={validator.messages.upperRightX}>
-                        <TextInputUi name="upperRightX"
-                            value={ui.upperRightX}
-                            placeHolder="Computed Values should not be changed"
-                            onChange={updateUI}
-                            onDebounce={this._save} />
-                    </FormField>
-
-                    <FormField label="Y coordinate upper right corner" error={validator.messages.upperRightY}>
-                        <TextInputUi name="upperRightY"
-                            value={ui.upperRightY}
-                            placeHolder="Computed Values should not be changed"
-                            onChange={updateUI}
-                            onDebounce={this._save} />
-                    </FormField>
-                </Box>}
-
+    return (
+      <Box flex={false}>
+        <Box direction="row" justify="start" pad={{ bottom: "small" }}>
+          <Box pad={{ right: "medium" }}>
+            <Text weight="bold">Spatial extent</Text>
+          </Box>
+          {showSpatialComputed && (
+            <Box>
+              <CheckboxUi
+                name="computed"
+                label="computed"
+                checked={ui.computed}
+                onChange={updateUI}
+                onDebounce={this._save}
+                toggle={true}
+              />
             </Box>
-        );
-    }
+          )}
+        </Box>
+        {!ui.computed && (
+          <Box>
+            <FormField
+              label="X coordinate lower left corner"
+              error={validator.messages.lowerLeftX}
+            >
+              <TextInputUi
+                name="lowerLeftX"
+                value={ui.lowerLeftX}
+                placeHolder="Computed Values should not be changed"
+                onChange={updateUI}
+                onDebounce={this._save}
+              />
+            </FormField>
+
+            <FormField
+              label="Y coordinate lower left corner"
+              error={validator.messages.lowerLeftY}
+            >
+              <TextInputUi
+                name="lowerLeftY"
+                value={ui.lowerLeftY}
+                placeHolder="Computed Values should not be changed"
+                onChange={updateUI}
+                onDebounce={this._save}
+              />
+            </FormField>
+
+            <FormField
+              label="X coordinate upper right corner"
+              error={validator.messages.upperRightX}
+            >
+              <TextInputUi
+                name="upperRightX"
+                value={ui.upperRightX}
+                placeHolder="Computed Values should not be changed"
+                onChange={updateUI}
+                onDebounce={this._save}
+              />
+            </FormField>
+
+            <FormField
+              label="Y coordinate upper right corner"
+              error={validator.messages.upperRightY}
+            >
+              <TextInputUi
+                name="upperRightY"
+                value={ui.upperRightY}
+                placeHolder="Computed Values should not be changed"
+                onChange={updateUI}
+                onDebounce={this._save}
+              />
+            </FormField>
+          </Box>
+        )}
+      </Box>
+    );
+  }
 }
 
 FeatureTypeEditExtentSpatial.propTypes = {
-    onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
 };
 
-FeatureTypeEditExtentSpatial.defaultProps = {
-};
+FeatureTypeEditExtentSpatial.defaultProps = {};
